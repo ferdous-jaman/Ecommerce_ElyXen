@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Navbar } from "@/components/layout/Navbar";
 import { MobileSidebar } from "@/components/layout/MobileSidebar";
+import { CommandPalette } from "@/components/shared/CommandPalette";
 import { cn } from "@/lib/utils";
 
 export function DashboardLayout() {
@@ -12,6 +13,7 @@ export function DashboardLayout() {
       </div>
 
       <MobileSidebar />
+      <CommandPalette />
 
       <div
         className={cn(

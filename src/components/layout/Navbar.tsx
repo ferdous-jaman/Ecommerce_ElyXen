@@ -1,11 +1,11 @@
-import { Bell, Search, Menu, LogOut, User, Settings } from "lucide-react";
+import { Bell, Search, Menu, LogOut, User, Settings, Command } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { useSidebarStore } from "@/store/useSidebarStore";
+import { useCommandStore } from "@/store/useCommandStore";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,6 +26,7 @@ const ROLE_LABELS: Record<string, string> = {
 export function Navbar() {
   const { setMobileOpen } = useSidebarStore();
   const { user, profile, logout } = useAuth();
+  const { setOpen: openCommand } = useCommandStore();
   const navigate = useNavigate();
 
   const displayName = profile?.full_name ?? user?.email?.split("@")[0] ?? "User";
@@ -52,13 +53,26 @@ export function Navbar() {
       </Button>
 
       <div className="flex flex-1 items-center gap-3">
-        <div className="relative hidden max-w-sm flex-1 md:flex">
-          <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search anything..."
-            className="h-8 pl-8 text-xs bg-muted/50 border-transparent focus:border-input focus:bg-background"
-          />
-        </div>
+        <button
+          onClick={() => openCommand(true)}
+          className="hidden md:flex items-center gap-2 h-8 max-w-xs flex-1 rounded-md border border-input bg-muted/50 px-3 text-xs text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+          aria-label="Open command palette"
+        >
+          <Search className="h-3.5 w-3.5 shrink-0" />
+          <span className="flex-1 text-left">Search anything…</span>
+          <kbd className="hidden sm:flex items-center gap-0.5 rounded border border-border bg-background px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground">
+            <Command className="h-2.5 w-2.5" />K
+          </kbd>
+        </button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 md:hidden text-muted-foreground"
+          onClick={() => openCommand(true)}
+          aria-label="Search"
+        >
+          <Search className="h-4 w-4" />
+        </Button>
       </div>
 
       <div className="flex items-center gap-1">
