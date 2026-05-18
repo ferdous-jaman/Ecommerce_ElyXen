@@ -9,6 +9,7 @@ import {
   Warehouse,
   Zap,
   X,
+  FolderOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSidebarStore } from "@/store/useSidebarStore";
@@ -25,7 +26,8 @@ import type { NavItem } from "@/types";
 const navItems: NavItem[] = [
   { label: "Dashboard", href: "/", icon: LayoutDashboard },
   { label: "Products", href: "/products", icon: Package },
-  { label: "Orders", href: "/orders", icon: ShoppingCart, badge: 12 },
+  { label: "Categories", href: "/categories", icon: FolderOpen },
+  { label: "Orders", href: "/orders", icon: ShoppingCart },
   { label: "Customers", href: "/customers", icon: Users },
   { label: "Inventory", href: "/inventory", icon: Warehouse },
   { label: "Analytics", href: "/analytics", icon: BarChart3 },

@@ -28,11 +28,13 @@ function StatCardSkeleton() {
 
 function TableRowSkeleton({ cols = 5 }: { cols?: number }) {
   return (
-    <div className="flex items-center gap-4 px-6 py-4 border-b">
+    <tr className="border-b">
       {Array.from({ length: cols }).map((_, i) => (
-        <Skeleton key={i} className="h-4 flex-1" />
+        <td key={i} className="px-4 py-3">
+          <Skeleton className="h-4 w-full" />
+        </td>
       ))}
-    </div>
+    </tr>
   );
 }
 
