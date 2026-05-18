@@ -1,0 +1,118 @@
+import type { MockOrder, ActivityEvent, RevenueDataPoint } from "@/types";
+
+export const revenueData: RevenueDataPoint[] = [
+  { month: "Jan", revenue: 42000, orders: 320 },
+  { month: "Feb", revenue: 38500, orders: 298 },
+  { month: "Mar", revenue: 51200, orders: 412 },
+  { month: "Apr", revenue: 47800, orders: 380 },
+  { month: "May", revenue: 63400, orders: 490 },
+  { month: "Jun", revenue: 58900, orders: 455 },
+  { month: "Jul", revenue: 71200, orders: 541 },
+  { month: "Aug", revenue: 68700, orders: 523 },
+  { month: "Sep", revenue: 79400, orders: 612 },
+  { month: "Oct", revenue: 83100, orders: 634 },
+  { month: "Nov", revenue: 91500, orders: 702 },
+  { month: "Dec", revenue: 104200, orders: 810 },
+];
+
+export const recentOrders: MockOrder[] = [
+  {
+    id: "1",
+    orderNumber: "#ORD-7823",
+    customer: { name: "Sarah Johnson", email: "sarah.j@email.com" },
+    status: "delivered",
+    total: 249.99,
+    items: 3,
+    createdAt: "2024-12-10T10:30:00Z",
+  },
+  {
+    id: "2",
+    orderNumber: "#ORD-7824",
+    customer: { name: "Michael Chen", email: "m.chen@email.com" },
+    status: "processing",
+    total: 1299.0,
+    items: 1,
+    createdAt: "2024-12-10T11:15:00Z",
+  },
+  {
+    id: "3",
+    orderNumber: "#ORD-7825",
+    customer: { name: "Emily Davis", email: "emily.d@email.com" },
+    status: "shipped",
+    total: 89.5,
+    items: 2,
+    createdAt: "2024-12-10T12:00:00Z",
+  },
+  {
+    id: "4",
+    orderNumber: "#ORD-7826",
+    customer: { name: "James Wilson", email: "j.wilson@email.com" },
+    status: "pending",
+    total: 459.0,
+    items: 4,
+    createdAt: "2024-12-10T13:45:00Z",
+  },
+  {
+    id: "5",
+    orderNumber: "#ORD-7827",
+    customer: { name: "Aisha Patel", email: "aisha.p@email.com" },
+    status: "cancelled",
+    total: 179.99,
+    items: 2,
+    createdAt: "2024-12-10T14:20:00Z",
+  },
+  {
+    id: "6",
+    orderNumber: "#ORD-7828",
+    customer: { name: "Lucas Martinez", email: "l.martinez@email.com" },
+    status: "delivered",
+    total: 599.0,
+    items: 5,
+    createdAt: "2024-12-10T15:00:00Z",
+  },
+];
+
+export const activityFeed: ActivityEvent[] = [
+  {
+    id: "1",
+    type: "order",
+    title: "New order received",
+    description: "Order #ORD-7828 from Lucas Martinez — $599.00",
+    timestamp: "2 min ago",
+  },
+  {
+    id: "2",
+    type: "customer",
+    title: "New customer registered",
+    description: "Priya Sharma created an account",
+    timestamp: "14 min ago",
+  },
+  {
+    id: "3",
+    type: "payment",
+    title: "Payment confirmed",
+    description: "Order #ORD-7824 payment of $1,299.00 confirmed",
+    timestamp: "32 min ago",
+  },
+  {
+    id: "4",
+    type: "product",
+    title: "Low stock alert",
+    description: "iPhone 15 Pro — only 3 units remaining",
+    timestamp: "1 hr ago",
+  },
+  {
+    id: "5",
+    type: "order",
+    title: "Order shipped",
+    description: "Order #ORD-7825 has been dispatched",
+    timestamp: "2 hr ago",
+  },
+  {
+    id: "6",
+    type: "system",
+    title: "System backup completed",
+    description: "Automated daily backup finished successfully",
+    timestamp: "3 hr ago",
+  },
+];
