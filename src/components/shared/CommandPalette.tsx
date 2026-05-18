@@ -34,19 +34,19 @@ export function CommandPalette() {
   }
 
   const pages: NavEntry[] = [
-    { label: "Dashboard", href: "/", icon: LayoutDashboard, shortcut: "G D" },
-    { label: "Products", href: "/products", icon: Package, shortcut: "G P" },
-    { label: "Categories", href: "/categories", icon: FolderOpen },
-    { label: "Orders", href: "/orders", icon: ShoppingCart, shortcut: "G O" },
-    { label: "Customers", href: "/customers", icon: Users, shortcut: "G C" },
-    { label: "Inventory", href: "/inventory", icon: Warehouse, shortcut: "G I" },
-    { label: "Analytics", href: "/analytics", icon: BarChart3 },
-    { label: "Settings", href: "/settings", icon: Settings, shortcut: "G S" },
+    { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard, shortcut: "G D" },
+    { label: "Products", href: "/dashboard/products", icon: Package, shortcut: "G P" },
+    { label: "Categories", href: "/dashboard/categories", icon: FolderOpen },
+    { label: "Orders", href: "/dashboard/orders", icon: ShoppingCart, shortcut: "G O" },
+    { label: "Customers", href: "/dashboard/customers", icon: Users, shortcut: "G C" },
+    { label: "Inventory", href: "/dashboard/inventory", icon: Warehouse, shortcut: "G I" },
+    { label: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
+    { label: "Settings", href: "/dashboard/settings", icon: Settings, shortcut: "G S" },
   ];
 
   const actions: ActionEntry[] = [
-    { label: "Add Product", icon: Plus, action: () => go("/products/new") },
-    { label: "Add Category", icon: Plus, action: () => go("/categories") },
+    { label: "Add Product", icon: Plus, action: () => go("/dashboard/products/new") },
+    { label: "Add Category", icon: Plus, action: () => go("/dashboard/categories") },
   ];
 
   return (

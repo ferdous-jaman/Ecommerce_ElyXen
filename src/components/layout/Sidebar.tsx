@@ -23,17 +23,17 @@ import { useAuth } from "@/contexts/AuthContext";
 import type { NavItem } from "@/types";
 
 const navItems: NavItem[] = [
-  { label: "Dashboard", href: "/", icon: LayoutDashboard },
-  { label: "Products", href: "/products", icon: Package },
-  { label: "Categories", href: "/categories", icon: FolderOpen },
-  { label: "Orders", href: "/orders", icon: ShoppingCart },
-  { label: "Customers", href: "/customers", icon: Users },
-  { label: "Inventory", href: "/inventory", icon: Warehouse },
-  { label: "Analytics", href: "/analytics", icon: BarChart3 },
+  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Products", href: "/dashboard/products", icon: Package },
+  { label: "Categories", href: "/dashboard/categories", icon: FolderOpen },
+  { label: "Orders", href: "/dashboard/orders", icon: ShoppingCart },
+  { label: "Customers", href: "/dashboard/customers", icon: Users },
+  { label: "Inventory", href: "/dashboard/inventory", icon: Warehouse },
+  { label: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
 ];
 
 const bottomNavItems: NavItem[] = [
-  { label: "Settings", href: "/settings", icon: Settings },
+  { label: "Settings", href: "/dashboard/settings", icon: Settings },
 ];
 
 type SidebarNavItemProps = {
@@ -44,8 +44,8 @@ type SidebarNavItemProps = {
 function SidebarNavItem({ item, isCollapsed }: SidebarNavItemProps) {
   const location = useLocation();
   const isActive =
-    item.href === "/"
-      ? location.pathname === "/"
+    item.href === "/dashboard"
+      ? location.pathname === "/dashboard"
       : location.pathname.startsWith(item.href);
 
   const Icon = item.icon;

@@ -309,9 +309,9 @@ CREATE POLICY "categories_delete_admin"
   USING (get_user_role() = 'admin');
 
 -- ---- PRODUCTS ----
-CREATE POLICY "products_read_authenticated"
+CREATE POLICY "products_read_public"
   ON public.products FOR SELECT
-  USING (auth.role() = 'authenticated');
+  USING (status = 'active' OR auth.role() = 'authenticated');
 
 CREATE POLICY "products_write_admin_staff"
   ON public.products FOR INSERT

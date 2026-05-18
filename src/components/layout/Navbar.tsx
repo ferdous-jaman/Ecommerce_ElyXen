@@ -133,14 +133,14 @@ export function Navbar() {
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="gap-2 cursor-pointer"
-              onClick={() => navigate("/settings")}
+              onClick={() => navigate("/dashboard/settings")}
             >
               <User className="h-3.5 w-3.5" />
               Profile
             </DropdownMenuItem>
             <DropdownMenuItem
               className="gap-2 cursor-pointer"
-              onClick={() => navigate("/settings")}
+              onClick={() => navigate("/dashboard/settings")}
             >
               <Settings className="h-3.5 w-3.5" />
               Settings

@@ -1,11 +1,18 @@
 import { lazy, Suspense } from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { DashboardLayout } from "@/layouts/DashboardLayout";
+import { ShopLayout } from "@/layouts/ShopLayout";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { PublicRoute } from "@/components/auth/PublicRoute";
 import { LoadingScreen } from "@/components/shared/LoadingScreen";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 
+// Public shop pages
+const LandingPage            = lazy(() => import("@/pages/shop/LandingPage").then((m) => ({ default: m.LandingPage })));
+const ShopPage               = lazy(() => import("@/pages/shop/ShopPage").then((m) => ({ default: m.ShopPage })));
+const ShopProductDetailPage  = lazy(() => import("@/pages/shop/ShopProductDetailPage").then((m) => ({ default: m.ShopProductDetailPage })));
+
+// Dashboard pages
 const DashboardPage     = lazy(() => import("@/pages/DashboardPage").then((m) => ({ default: m.DashboardPage })));
 const AnalyticsPage     = lazy(() => import("@/pages/AnalyticsPage").then((m) => ({ default: m.AnalyticsPage })));
 const SettingsPage      = lazy(() => import("@/pages/SettingsPage").then((m) => ({ default: m.SettingsPage })));
@@ -33,20 +40,34 @@ function SuspenseRoute({ children }: { children: React.ReactNode }) {
 }
 
 export const router = createBrowserRouter([
+  // ── Public shop routes (no auth required) ──────────────────
+  {
+    path: "/",
+    element: <ShopLayout />,
+    children: [
+      { index: true, element: <SuspenseRoute><LandingPage /></SuspenseRoute> },
+      { path: "shop", element: <SuspenseRoute><ShopPage /></SuspenseRoute> },
+      { path: "shop/product/:id", element: <SuspenseRoute><ShopProductDetailPage /></SuspenseRoute> },
+    ],
+  },
+
+  // ── Auth routes ─────────────────────────────────────────────
   {
     path: "/login",
-    element: <SuspenseRoute><PublicRoute><LoginPage /></PublicRoute></SuspenseRoute>,
+    element: <SuspenseRoute><PublicRoute redirectTo="/dashboard"><LoginPage /></PublicRoute></SuspenseRoute>,
   },
   {
     path: "/signup",
-    element: <SuspenseRoute><PublicRoute><SignupPage /></PublicRoute></SuspenseRoute>,
+    element: <SuspenseRoute><PublicRoute redirectTo="/dashboard"><SignupPage /></PublicRoute></SuspenseRoute>,
   },
   {
     path: "/unauthorized",
     element: <SuspenseRoute><UnauthorizedPage /></SuspenseRoute>,
   },
+
+  // ── Protected dashboard routes ───────────────────────────────
   {
-    path: "/",
+    path: "/dashboard",
     element: (
       <ProtectedRoute>
         <DashboardLayout />

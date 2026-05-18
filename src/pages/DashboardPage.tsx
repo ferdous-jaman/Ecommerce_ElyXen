@@ -72,7 +72,7 @@ export function DashboardPage() {
       icon: DollarSign,
       color: "text-indigo-500",
       bg: "bg-indigo-500/10",
-      href: "/analytics",
+      href: "/dashboard/analytics",
     },
     {
       title: "Total Orders",
@@ -82,7 +82,7 @@ export function DashboardPage() {
       icon: ShoppingCart,
       color: "text-emerald-500",
       bg: "bg-emerald-500/10",
-      href: "/orders",
+      href: "/dashboard/orders",
     },
     {
       title: "Active Customers",
@@ -92,7 +92,7 @@ export function DashboardPage() {
       icon: Users,
       color: "text-violet-500",
       bg: "bg-violet-500/10",
-      href: "/customers",
+      href: "/dashboard/customers",
     },
     {
       title: "Avg. Order Value",
@@ -102,7 +102,7 @@ export function DashboardPage() {
       icon: TrendingUp,
       color: "text-amber-500",
       bg: "bg-amber-500/10",
-      href: "/analytics",
+      href: "/dashboard/analytics",
     },
   ];
 
@@ -116,7 +116,7 @@ export function DashboardPage() {
         title={`${greeting}, ${displayName} 👋`}
         description="Here's what's happening with your store today."
         actions={
-          <Button size="sm" className="gap-1.5" onClick={() => navigate("/products/new")}>
+          <Button size="sm" className="gap-1.5" onClick={() => navigate("/dashboard/products/new")}>
             <Plus className="h-3.5 w-3.5" /> Add Product
           </Button>
         }
@@ -270,7 +270,7 @@ export function DashboardPage() {
                 <CardDescription>Best performing by revenue</CardDescription>
               </div>
               <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 text-muted-foreground"
-                onClick={() => navigate("/products")}>
+                onClick={() => navigate("/dashboard/products")}>
                 View all <ChevronRight className="h-3.5 w-3.5" />
               </Button>
             </div>
@@ -316,7 +316,7 @@ export function DashboardPage() {
                 <CardDescription>Latest orders from your store</CardDescription>
               </div>
               <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 text-muted-foreground"
-                onClick={() => navigate("/orders")}>
+                onClick={() => navigate("/dashboard/orders")}>
                 View all <ChevronRight className="h-3.5 w-3.5" />
               </Button>
             </div>
@@ -326,7 +326,7 @@ export function DashboardPage() {
               {recentOrders.map((order) => (
                 <div key={order.id}
                   className="flex items-center gap-3 px-6 py-3 hover:bg-muted/40 transition-colors cursor-pointer"
-                  onClick={() => navigate("/orders")}>
+                  onClick={() => navigate("/dashboard/orders")}>
                   <Avatar className="h-8 w-8 shrink-0">
                     <AvatarFallback className="bg-primary/10 text-primary text-[10px] font-semibold">
                       {getInitials(order.customer.name)}
@@ -374,7 +374,7 @@ export function DashboardPage() {
                 </div>
               ))}
               <Button variant="outline" size="sm" className="w-full h-7 text-xs mt-1"
-                onClick={() => navigate("/inventory")}>
+                onClick={() => navigate("/dashboard/inventory")}>
                 View Inventory
               </Button>
             </CardContent>
