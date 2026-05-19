@@ -15,6 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { recentOrders, mockCustomers } from "@/lib/mockData";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/hooks/useTranslation";
 
 type RiskLevel = "low" | "medium" | "high" | "critical";
 
@@ -125,6 +126,7 @@ function getRiskLevel(score: number): RiskLevel {
 }
 
 export function FraudCheckPage() {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("flags");
   const [dismissedFlags, setDismissedFlags] = useState<Set<string>>(new Set());
@@ -177,12 +179,12 @@ export function FraudCheckPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Fraud & Duplicate Check"
+        title={t("fraud.title")}
         description="Detect duplicate orders, suspicious patterns, and high-risk transactions."
         actions={
           <Button size="sm" variant="outline" className="gap-1.5"
             onClick={() => { setDismissedFlags(new Set()); toast.success("Flags refreshed"); }}>
-            <RefreshCw className="h-3.5 w-3.5" /> Refresh
+            <RefreshCw className="h-3.5 w-3.5" /> {t("common.refresh")}
           </Button>
         }
       />
@@ -208,7 +210,7 @@ export function FraudCheckPage() {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList className="h-9 gap-0.5">
           <TabsTrigger value="flags" className="gap-1.5 text-xs">
-            <ShieldAlert className="h-3.5 w-3.5" /> Fraud Flags
+            <ShieldAlert className="h-3.5 w-3.5" /> {t("fraud.flagged")}
             {activeFlags.length > 0 && (
               <span className="ml-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive text-[9px] font-bold text-white px-1">
                 {activeFlags.length}
@@ -216,13 +218,13 @@ export function FraudCheckPage() {
             )}
           </TabsTrigger>
           <TabsTrigger value="duplicates" className="gap-1.5 text-xs">
-            <Copy className="h-3.5 w-3.5" /> Duplicate Orders
+            <Copy className="h-3.5 w-3.5" /> {t("fraud.duplicateOrders")}
           </TabsTrigger>
           <TabsTrigger value="check" className="gap-1.5 text-xs">
-            <Search className="h-3.5 w-3.5" /> Manual Check
+            <Search className="h-3.5 w-3.5" /> {t("fraud.manualCheck")}
           </TabsTrigger>
           <TabsTrigger value="customers" className="gap-1.5 text-xs">
-            <User className="h-3.5 w-3.5" /> Customer Risk
+            <User className="h-3.5 w-3.5" /> {t("fraud.customerRisk")}
           </TabsTrigger>
         </TabsList>
 

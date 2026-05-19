@@ -12,6 +12,7 @@ import { formatCurrency } from "@/lib/utils";
 import { useCartStore } from "@/store/useCartStore";
 import { useWishlistStore } from "@/store/useWishlistStore";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTranslation } from "@/hooks/useTranslation";
 import { toast } from "sonner";
 import type { Product } from "@/types/database";
 
@@ -23,6 +24,7 @@ function ProductCard({ product }: { product: Product }) {
   const { addItem, openCart } = useCartStore();
   const { toggleItem, hasItem } = useWishlistStore();
   const { isAuthenticated } = useAuth();
+  const { t } = useTranslation();
   const discount = product.compare_price && product.compare_price > product.price
     ? Math.round(((product.compare_price - product.price) / product.compare_price) * 100) : null;
   const wished = hasItem(product.id);
@@ -31,7 +33,7 @@ function ProductCard({ product }: { product: Product }) {
     e.stopPropagation();
     addItem(product);
     openCart();
-    toast.success("Added to cart!", { description: product.name });
+    toast.success(t("shop.addedToCart"), { description: product.name });
   }
 
   function handleBuyNow(e: React.MouseEvent) {
@@ -61,7 +63,7 @@ function ProductCard({ product }: { product: Product }) {
           </Badge>
         )}
         <button
-          onClick={(e) => { e.stopPropagation(); toggleItem(product); toast.success(wished ? "Removed from wishlist" : "Added to wishlist!"); }}
+          onClick={(e) => { e.stopPropagation(); toggleItem(product); toast.success(wished ? t("shop.removedFromWishlist") : t("shop.addedToWishlist")); }}
           className={`absolute top-2 right-2 flex h-7 w-7 items-center justify-center rounded-full shadow transition-colors ${
             wished ? "bg-rose-500 text-white" : "bg-background/90 text-muted-foreground hover:text-rose-500"
           }`}
@@ -81,10 +83,10 @@ function ProductCard({ product }: { product: Product }) {
         </div>
         <div className="flex gap-1.5 mt-auto pt-3">
           <Button size="sm" variant="outline" className="flex-1 gap-1 text-xs h-8" onClick={handleAddToCart}>
-            <ShoppingCart className="h-3.5 w-3.5" /> Cart
+            <ShoppingCart className="h-3.5 w-3.5" /> {t("shop.addToCart")}
           </Button>
           <Button size="sm" className="flex-1 gap-1 text-xs h-8" onClick={handleBuyNow}>
-            <Zap className="h-3.5 w-3.5" /> Buy Now
+            <Zap className="h-3.5 w-3.5" /> {t("shop.buyNow")}
           </Button>
         </div>
       </CardContent>
@@ -126,6 +128,7 @@ const CATEGORY_META: Record<string, { emoji: string; img: string }> = {
 
 export function ShopPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -196,12 +199,12 @@ export function ShopPage() {
         {/* Sidebar */}
         <aside className="hidden lg:block w-52 shrink-0">
           <div className="sticky top-24 space-y-1">
-            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3 px-2">Categories</p>
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3 px-2">{t("shop.categories")}</p>
             <button
               onClick={() => setCategory("")}
               className={`flex items-center justify-between w-full px-3 py-2 rounded-lg text-sm font-medium transition-colors ${!categorySlug ? "bg-primary text-primary-foreground" : "hover:bg-muted text-foreground"}`}
             >
-              All Products
+              {t("shop.allProducts")}
               <ChevronRight className="h-3.5 w-3.5 opacity-50" />
             </button>
             {categories.map((cat) => {
@@ -244,22 +247,22 @@ export function ShopPage() {
           <div className="flex items-center justify-between mb-6 gap-4 flex-wrap">
             <div>
               <h1 className="text-2xl font-black tracking-tight text-foreground">
-                {activeCategory ? activeCategory.name : "All Products"}
+                {activeCategory ? activeCategory.name : t("shop.allProducts")}
               </h1>
               <p className="text-sm text-muted-foreground mt-0.5">
-                {loading ? "Loading..." : `${total} product${total !== 1 ? "s" : ""} found`}
+                {loading ? t("common.loading") : `${total} product${total !== 1 ? "s" : ""} found`}
               </p>
             </div>
             <div className="flex items-center gap-2">
               <Select value={sort} onValueChange={(v) => setSearchParams((p) => { const n = new URLSearchParams(p); n.set("sort", v); return n; })}>
                 <SelectTrigger className="w-44 h-9 text-sm">
-                  <SelectValue placeholder="Sort by" />
+                  <SelectValue placeholder={t("shop.sortBy")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="newest">Newest First</SelectItem>
-                  <SelectItem value="price_asc">Price: Low → High</SelectItem>
-                  <SelectItem value="price_desc">Price: High → Low</SelectItem>
-                  <SelectItem value="name_asc">Name: A–Z</SelectItem>
+                  <SelectItem value="newest">{t("shop.newest")}</SelectItem>
+                  <SelectItem value="price_asc">{t("shop.priceLowHigh")}</SelectItem>
+                  <SelectItem value="price_desc">{t("shop.priceHighLow")}</SelectItem>
+                  <SelectItem value="name_asc">{t("shop.nameAZ")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -268,7 +271,7 @@ export function ShopPage() {
           {/* Search */}
           <form onSubmit={handleSearch} className="relative mb-6">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Search products..." value={localSearch}
+            <Input placeholder={t("shop.searchProducts")} value={localSearch}
               onChange={(e) => setLocalSearch(e.target.value)} className="pl-9 pr-8" />
             {localSearch && (
               <button type="button" onClick={() => { setLocalSearch(""); setSearchParams((p) => { const n = new URLSearchParams(p); n.delete("q"); return n; }); }}
@@ -324,12 +327,12 @@ export function ShopPage() {
               <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-muted">
                 <Package className="h-8 w-8 text-muted-foreground" />
               </div>
-              <p className="font-semibold text-foreground">No products found</p>
+              <p className="font-semibold text-foreground">{t("shop.noProducts")}</p>
               <p className="text-sm text-muted-foreground max-w-xs">
                 {search ? `No results for "${search}".` : categorySlug ? `No products in this category yet.` : "No products available right now."}
               </p>
               <Button variant="outline" size="sm" onClick={() => { navigate("/shop"); setLocalSearch(""); }}>
-                Browse all products
+                {t("shop.allProducts")}
               </Button>
             </div>
           ) : (

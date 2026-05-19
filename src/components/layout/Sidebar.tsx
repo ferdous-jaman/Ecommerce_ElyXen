@@ -5,6 +5,7 @@ import {
   LogOut, User, DollarSign, Store, Briefcase, ClipboardList,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "@/hooks/useTranslation";
 import { cn, getInitials } from "@/lib/utils";
 import { useSidebarStore } from "@/store/useSidebarStore";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -20,21 +21,24 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import type { NavItem } from "@/types";
 
-const navItems: NavItem[] = [
-  { label: "Dashboard",  href: "/dashboard",           icon: LayoutDashboard },
-  { label: "Products",   href: "/dashboard/products",   icon: Package },
-  { label: "Categories", href: "/dashboard/categories", icon: FolderOpen },
-  { label: "Banners",    href: "/dashboard/banners",    icon: Images },
-  { label: "Orders",     href: "/dashboard/orders",     icon: ShoppingCart },
-  { label: "Customers",  href: "/dashboard/customers",  icon: Users },
-  { label: "Inventory",  href: "/dashboard/inventory",  icon: Warehouse },
-  { label: "Analytics",  href: "/dashboard/analytics",   icon: BarChart3 },
-  { label: "Fraud Check", href: "/dashboard/fraud-check", icon: ShieldAlert },
-];
-
-const bottomNavItems: NavItem[] = [
-  { label: "Settings", href: "/dashboard/settings", icon: Settings },
-];
+function useNavItems() {
+  const { t } = useTranslation();
+  const navItems: NavItem[] = [
+    { label: t("nav.dashboard"),  href: "/dashboard",            icon: LayoutDashboard },
+    { label: t("nav.products"),   href: "/dashboard/products",   icon: Package },
+    { label: t("nav.categories"), href: "/dashboard/categories", icon: FolderOpen },
+    { label: t("nav.banners"),    href: "/dashboard/banners",    icon: Images },
+    { label: t("nav.orders"),     href: "/dashboard/orders",     icon: ShoppingCart },
+    { label: t("nav.customers"),  href: "/dashboard/customers",  icon: Users },
+    { label: t("nav.inventory"),  href: "/dashboard/inventory",  icon: Warehouse },
+    { label: t("nav.analytics"),  href: "/dashboard/analytics",  icon: BarChart3 },
+    { label: t("nav.fraudCheck"), href: "/dashboard/fraud-check", icon: ShieldAlert },
+  ];
+  const bottomNavItems: NavItem[] = [
+    { label: t("nav.settings"), href: "/dashboard/settings", icon: Settings },
+  ];
+  return { navItems, bottomNavItems };
+}
 
 type SidebarNavItemProps = {
   item: NavItem;
@@ -105,6 +109,8 @@ export function Sidebar() {
   const { isCollapsed, toggleCollapse } = useSidebarStore();
   const { user, profile, logout } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const { navItems, bottomNavItems } = useNavItems();
 
   const displayName = profile?.full_name ?? user?.email?.split("@")[0] ?? "User";
   const displayRole = profile?.role ?? "staff";
@@ -114,7 +120,7 @@ export function Sidebar() {
 
   async function handleLogout() {
     await logout();
-    toast.success("Signed out successfully.");
+    toast.success(t("toast.signedOut"));
     navigate("/login");
   }
 
@@ -148,7 +154,7 @@ export function Sidebar() {
                   ElyXen
                 </span>
                 <span className="text-[10px] text-muted-foreground">
-                  Management
+                  {t("nav.management")}
                 </span>
               </div>
             )}
@@ -170,12 +176,12 @@ export function Sidebar() {
             <>
               <Separator className="my-3 bg-sidebar-border" />
               {!isCollapsed && (
-                <p className="px-4 mb-1 text-[9px] font-bold uppercase tracking-widest text-muted-foreground/60">Admin</p>
+                <p className="px-4 mb-1 text-[9px] font-bold uppercase tracking-widest text-muted-foreground/60">ADMIN</p>
               )}
               <nav className={cn("flex flex-col gap-0.5 px-2")}>
                 {[
-                  { label: "Staff Mgmt",  href: "/dashboard/staff",   icon: Users },
-                  { label: "Payroll",     href: "/dashboard/salary",  icon: DollarSign },
+                  { label: t("nav.staffMgmt"), href: "/dashboard/staff",  icon: Users },
+                  { label: t("nav.payroll"),   href: "/dashboard/salary", icon: DollarSign },
                 ].map((item) => (
                   <SidebarNavItem key={item.href} item={item} isCollapsed={isCollapsed} />
                 ))}
@@ -250,10 +256,10 @@ export function Sidebar() {
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
                 <DropdownMenuItem className="gap-2 cursor-pointer text-xs" onClick={() => navigate("/dashboard/settings?tab=profile")}>
-                  <User className="h-3.5 w-3.5 text-muted-foreground" /> My Profile
+                  <User className="h-3.5 w-3.5 text-muted-foreground" /> {t("navbar.myProfile")}
                 </DropdownMenuItem>
                 <DropdownMenuItem className="gap-2 cursor-pointer text-xs" onClick={() => navigate("/dashboard/settings")}>
-                  <Settings className="h-3.5 w-3.5 text-muted-foreground" /> Settings
+                  <Settings className="h-3.5 w-3.5 text-muted-foreground" /> {t("common.settings")}
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               {isStaff && (
@@ -261,10 +267,10 @@ export function Sidebar() {
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
                     <DropdownMenuItem className="gap-2 cursor-pointer text-xs" onClick={() => navigate("/dashboard/settings?tab=staff")}>
-                      <Briefcase className="h-3.5 w-3.5 text-muted-foreground" /> My Shift
+                      <Briefcase className="h-3.5 w-3.5 text-muted-foreground" /> {t("navbar.shiftSchedule")}
                     </DropdownMenuItem>
                     <DropdownMenuItem className="gap-2 cursor-pointer text-xs" onClick={() => navigate("/dashboard/orders")}>
-                      <ClipboardList className="h-3.5 w-3.5 text-muted-foreground" /> Orders Queue
+                      <ClipboardList className="h-3.5 w-3.5 text-muted-foreground" /> {t("navbar.ordersQueue")}
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
                 </>
@@ -274,20 +280,20 @@ export function Sidebar() {
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
                     <DropdownMenuItem className="gap-2 cursor-pointer text-xs" onClick={() => navigate("/dashboard/staff")}>
-                      <Users className="h-3.5 w-3.5 text-muted-foreground" /> Staff Management
+                      <Users className="h-3.5 w-3.5 text-muted-foreground" /> {t("navbar.staffManagement")}
                     </DropdownMenuItem>
                     <DropdownMenuItem className="gap-2 cursor-pointer text-xs" onClick={() => navigate("/dashboard/salary")}>
-                      <DollarSign className="h-3.5 w-3.5 text-muted-foreground" /> Payroll
+                      <DollarSign className="h-3.5 w-3.5 text-muted-foreground" /> {t("nav.payroll")}
                     </DropdownMenuItem>
                     <DropdownMenuItem className="gap-2 cursor-pointer text-xs" onClick={() => navigate("/dashboard/settings?tab=store")}>
-                      <Store className="h-3.5 w-3.5 text-muted-foreground" /> Store Settings
+                      <Store className="h-3.5 w-3.5 text-muted-foreground" /> {t("navbar.storeSettings")}
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
                 </>
               )}
               <DropdownMenuSeparator />
               <DropdownMenuItem className="gap-2 cursor-pointer text-xs text-destructive focus:text-destructive focus:bg-destructive/10" onClick={handleLogout}>
-                <LogOut className="h-3.5 w-3.5" /> Sign out
+                <LogOut className="h-3.5 w-3.5" /> {t("common.signOut")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

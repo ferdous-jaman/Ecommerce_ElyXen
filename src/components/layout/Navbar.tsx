@@ -8,6 +8,8 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
+import { LanguageToggle } from "@/components/shared/LanguageToggle";
+import { useTranslation } from "@/hooks/useTranslation";
 import { useSidebarStore } from "@/store/useSidebarStore";
 import { useCommandStore } from "@/store/useCommandStore";
 import {
@@ -46,10 +48,11 @@ export function Navbar() {
   const avatarUrl = profile?.avatar_url ?? "";
   const isAdmin = profile?.role === "admin";
   const isStaff = profile?.role === "staff";
+  const { t } = useTranslation();
 
   async function handleLogout() {
     await logout();
-    toast.success("Signed out successfully.");
+    toast.success(t("toast.signedOut"));
     navigate("/login");
   }
 
@@ -72,7 +75,7 @@ export function Navbar() {
           aria-label="Open command palette"
         >
           <Search className="h-3.5 w-3.5 shrink-0" />
-          <span className="flex-1 text-left">Search anything…</span>
+          <span className="flex-1 text-left">{t("navbar.searchPlaceholder")}</span>
           <kbd className="hidden sm:flex items-center gap-0.5 rounded border border-border bg-background px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground">
             <Command className="h-2.5 w-2.5" />K
           </kbd>
@@ -99,6 +102,7 @@ export function Navbar() {
           <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-primary" />
         </Button>
 
+        <LanguageToggle />
         <ThemeToggle />
 
         <DropdownMenu>
@@ -142,13 +146,13 @@ export function Navbar() {
             {/* Common — My Account */}
             <DropdownMenuGroup>
               <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => navigate("/dashboard/settings?tab=profile")}>
-                <User className="h-3.5 w-3.5 text-muted-foreground" /> My Profile
+                <User className="h-3.5 w-3.5 text-muted-foreground" /> {t("navbar.myProfile")}
               </DropdownMenuItem>
               <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => navigate("/dashboard/settings")}>
-                <Settings className="h-3.5 w-3.5 text-muted-foreground" /> Settings
+                <Settings className="h-3.5 w-3.5 text-muted-foreground" /> {t("common.settings")}
               </DropdownMenuItem>
               <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => navigate("/dashboard")}>
-                <LayoutDashboard className="h-3.5 w-3.5 text-muted-foreground" /> Dashboard
+                <LayoutDashboard className="h-3.5 w-3.5 text-muted-foreground" /> {t("common.dashboard")}
               </DropdownMenuItem>
             </DropdownMenuGroup>
 
@@ -157,12 +161,12 @@ export function Navbar() {
               <>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                  <DropdownMenuLabel className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground px-2 py-1">My Work</DropdownMenuLabel>
+                  <DropdownMenuLabel className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground px-2 py-1">{t("navbar.myWork")}</DropdownMenuLabel>
                   <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => navigate("/dashboard/settings?tab=staff")}>
-                    <Briefcase className="h-3.5 w-3.5 text-muted-foreground" /> Shift & Schedule
+                    <Briefcase className="h-3.5 w-3.5 text-muted-foreground" /> {t("navbar.shiftSchedule")}
                   </DropdownMenuItem>
                   <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => navigate("/dashboard/orders")}>
-                    <ClipboardList className="h-3.5 w-3.5 text-muted-foreground" /> My Orders Queue
+                    <ClipboardList className="h-3.5 w-3.5 text-muted-foreground" /> {t("navbar.ordersQueue")}
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
               </>
@@ -173,21 +177,21 @@ export function Navbar() {
               <>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                  <DropdownMenuLabel className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground px-2 py-1">Admin Controls</DropdownMenuLabel>
+                  <DropdownMenuLabel className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground px-2 py-1">{t("navbar.adminControls")}</DropdownMenuLabel>
                   <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => navigate("/dashboard/staff")}>
-                    <Users className="h-3.5 w-3.5 text-muted-foreground" /> Staff Management
+                    <Users className="h-3.5 w-3.5 text-muted-foreground" /> {t("navbar.staffManagement")}
                   </DropdownMenuItem>
                   <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => navigate("/dashboard/salary")}>
-                    <DollarSign className="h-3.5 w-3.5 text-muted-foreground" /> Payroll & Salary
+                    <DollarSign className="h-3.5 w-3.5 text-muted-foreground" /> {t("salary.title")}
                   </DropdownMenuItem>
                   <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => navigate("/dashboard/analytics")}>
-                    <BarChart3 className="h-3.5 w-3.5 text-muted-foreground" /> Revenue Reports
+                    <BarChart3 className="h-3.5 w-3.5 text-muted-foreground" /> {t("navbar.revenuReports")}
                   </DropdownMenuItem>
                   <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => navigate("/dashboard/fraud-check")}>
-                    <ShieldAlert className="h-3.5 w-3.5 text-muted-foreground" /> Fraud Check
+                    <ShieldAlert className="h-3.5 w-3.5 text-muted-foreground" /> {t("fraud.title")}
                   </DropdownMenuItem>
                   <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => navigate("/dashboard/settings?tab=store")}>
-                    <Store className="h-3.5 w-3.5 text-muted-foreground" /> Store Settings
+                    <Store className="h-3.5 w-3.5 text-muted-foreground" /> {t("navbar.storeSettings")}
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
               </>
@@ -198,7 +202,7 @@ export function Navbar() {
               className="gap-2 cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10"
               onClick={handleLogout}
             >
-              <LogOut className="h-3.5 w-3.5" /> Sign out
+              <LogOut className="h-3.5 w-3.5" /> {t("common.signOut")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

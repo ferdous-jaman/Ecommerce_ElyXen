@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn, getInitials } from "@/lib/utils";
+import { useTranslation } from "@/hooks/useTranslation";
 
 type PayStatus = "paid" | "pending" | "processing";
 
@@ -59,6 +60,7 @@ const MONTHLY_HISTORY = [
 ];
 
 export function SalaryPage() {
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const [payroll, setPayroll] = useState<PayRecord[]>(PAYROLL);
 
@@ -76,21 +78,21 @@ export function SalaryPage() {
 
   function markPaid(id: string) {
     setPayroll((prev) => prev.map((r) => r.id === id ? { ...r, status: "paid" } : r));
-    toast.success("Salary marked as paid");
+    toast.success(t("salary.markPaid"));
   }
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Payroll & Salary"
+        title={t("salary.title")}
         description="Manage staff salaries, bonuses, deductions and payment history."
         actions={
           <div className="flex gap-2">
             <Button size="sm" variant="outline" className="gap-1.5" onClick={() => toast.info("Payslip export coming soon")}>
-              <Download className="h-3.5 w-3.5" /> Export
+              <Download className="h-3.5 w-3.5" /> {t("common.export")}
             </Button>
             <Button size="sm" className="gap-1.5" onClick={() => toast.info("Process payroll initiated")}>
-              <CreditCard className="h-3.5 w-3.5" /> Process Payroll
+              <CreditCard className="h-3.5 w-3.5" /> {t("salary.title")}
             </Button>
           </div>
         }

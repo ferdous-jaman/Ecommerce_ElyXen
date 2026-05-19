@@ -12,6 +12,8 @@ import { useCartStore } from "@/store/useCartStore";
 import { useWishlistStore } from "@/store/useWishlistStore";
 import { CartDrawer } from "@/components/shop/CartDrawer";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
+import { LanguageToggle } from "@/components/shared/LanguageToggle";
+import { useTranslation } from "@/hooks/useTranslation";
 import { useState, useRef, useEffect, type FormEvent } from "react";
 import { getInitials } from "@/lib/utils";
 
@@ -30,6 +32,7 @@ export function ShopLayout() {
   const isCustomer = profile?.role === "customer";
   const isAdminOrStaff = profile?.role === "admin" || profile?.role === "staff";
   const displayName = profile?.full_name ?? profile?.email?.split("@")[0] ?? "Account";
+  const { t } = useTranslation();
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -80,7 +83,7 @@ export function ShopLayout() {
               <Input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search products, categories..."
+                placeholder={t("shop.searchProducts")}
                 className="pl-9 pr-4 h-10 rounded-xl border-border bg-muted/50 focus:bg-background"
               />
             </form>
@@ -92,10 +95,10 @@ export function ShopLayout() {
               {!isAuthenticated && (
                 <>
                   <Button variant="ghost" size="sm" onClick={() => navigate("/login")} className="gap-1.5">
-                    <LogIn className="h-4 w-4" /> Sign In
+                    <LogIn className="h-4 w-4" /> {t("auth.login")}
                   </Button>
                   <Button size="sm" onClick={() => navigate("/signup")} className="gap-1.5">
-                    <UserPlus className="h-4 w-4" /> Register
+                    <UserPlus className="h-4 w-4" /> {t("auth.signup")}
                   </Button>
                 </>
               )}
@@ -103,7 +106,7 @@ export function ShopLayout() {
               {/* Admin / Staff */}
               {isAuthenticated && isAdminOrStaff && (
                 <Button size="sm" variant="outline" onClick={() => navigate("/dashboard")} className="gap-1.5">
-                  <LayoutDashboard className="h-4 w-4" /> Dashboard
+                  <LayoutDashboard className="h-4 w-4" /> {t("common.dashboard")}
                 </Button>
               )}
 
@@ -138,12 +141,12 @@ export function ShopLayout() {
 
                       {/* Menu items */}
                       {[
-                        { icon: User,         label: "My Profile",       path: "/account/profile" },
-                        { icon: ClipboardList,label: "My Orders",         path: "/account/orders" },
-                        { icon: Heart,        label: "Wishlist",          path: "/account/wishlist", badge: wCount > 0 ? wCount : undefined },
-                        { icon: MapPin,       label: "Saved Addresses",   path: "/account/addresses" },
-                        { icon: CreditCard,   label: "Payment Methods",   path: "/account/payment-methods" },
-                        { icon: Settings,     label: "Account Settings",  path: "/account/profile" },
+                        { icon: User,         label: t("navbar.myProfile"),       path: "/account/profile" },
+                        { icon: ClipboardList,label: t("orders.title"),           path: "/account/orders" },
+                        { icon: Heart,        label: t("account.wishlist"), path: "/account/wishlist", badge: wCount > 0 ? wCount : undefined },
+                        { icon: MapPin,       label: t("account.addresses"), path: "/account/addresses" },
+                        { icon: CreditCard,   label: t("account.paymentMethods"), path: "/account/payment-methods" },
+                        { icon: Settings,     label: t("common.settings"),  path: "/account/profile" },
                       ].map(({ icon: Icon, label, path, badge }) => (
                         <button key={label}
                           onClick={() => { setAccountOpen(false); navigate(path); }}
@@ -164,7 +167,7 @@ export function ShopLayout() {
                           onClick={async () => { setAccountOpen(false); await logout(); navigate("/"); }}
                           className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-destructive hover:bg-destructive/10 transition-colors"
                         >
-                          <LogOut className="h-4 w-4" /> Sign Out
+                          <LogOut className="h-4 w-4" /> {t("common.signOut")}
                         </button>
                       </div>
                     </div>
@@ -172,7 +175,8 @@ export function ShopLayout() {
                 </div>
               )}
 
-              {/* Theme Toggle — available to everyone */}
+              {/* Language + Theme Toggles — available to everyone */}
+              <LanguageToggle />
               <ThemeToggle />
 
               {/* Wishlist icon */}
@@ -260,17 +264,17 @@ export function ShopLayout() {
               {!isAuthenticated && (
                 <>
                   <Button variant="outline" size="sm" className="w-full gap-2" onClick={() => { navigate("/login"); closeAll(); }}>
-                    <LogIn className="h-4 w-4" /> Sign In
+                    <LogIn className="h-4 w-4" /> {t("auth.login")}
                   </Button>
                   <Button size="sm" className="w-full gap-2" onClick={() => { navigate("/signup"); closeAll(); }}>
-                    <UserPlus className="h-4 w-4" /> Create Account
+                    <UserPlus className="h-4 w-4" /> {t("auth.signup")}
                   </Button>
                 </>
               )}
 
               {isAuthenticated && isAdminOrStaff && (
                 <Button size="sm" variant="outline" className="w-full gap-2" onClick={() => { navigate("/dashboard"); closeAll(); }}>
-                  <LayoutDashboard className="h-4 w-4" /> Dashboard
+                  <LayoutDashboard className="h-4 w-4" /> {t("common.dashboard")}
                 </Button>
               )}
 
@@ -286,11 +290,11 @@ export function ShopLayout() {
                     </div>
                   </div>
                   {[
-                    { icon: User,          label: "My Profile",      path: "/account/profile" },
-                    { icon: ClipboardList, label: "My Orders",        path: "/account/orders" },
-                    { icon: Heart,         label: "Wishlist",         path: "/account/wishlist" },
-                    { icon: MapPin,        label: "Addresses",        path: "/account/addresses" },
-                    { icon: CreditCard,    label: "Payment Methods",  path: "/account/payment-methods" },
+                    { icon: User,          label: t("navbar.myProfile"),    path: "/account/profile" },
+                    { icon: ClipboardList, label: t("orders.title"),          path: "/account/orders" },
+                    { icon: Heart,         label: t("account.wishlist"),  path: "/account/wishlist" },
+                    { icon: MapPin,        label: t("account.addresses"), path: "/account/addresses" },
+                    { icon: CreditCard,    label: t("account.paymentMethods"), path: "/account/payment-methods" },
                   ].map(({ icon: Icon, label, path }) => (
                     <button key={label} onClick={() => { navigate(path); closeAll(); }}
                       className="flex w-full items-center gap-2 px-2 py-2 text-sm text-foreground hover:bg-accent rounded-lg transition-colors">
@@ -300,7 +304,7 @@ export function ShopLayout() {
                   <button
                     onClick={async () => { closeAll(); await logout(); navigate("/"); }}
                     className="flex w-full items-center gap-2 px-2 py-2 text-sm text-destructive hover:bg-destructive/10 rounded-lg transition-colors mt-1">
-                    <LogOut className="h-4 w-4" /> Sign Out
+                    <LogOut className="h-4 w-4" /> {t("common.signOut")}
                   </button>
                 </div>
               )}

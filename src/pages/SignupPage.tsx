@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LoadingSpinner } from "@/components/shared/LoadingScreen";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const signupSchema = z.object({
   fullName: z
@@ -39,6 +40,7 @@ export function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const { signup } = useAuth();
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const {
@@ -111,7 +113,7 @@ export function SignupPage() {
               <span className="font-bold text-foreground">ElyXen</span>
             </div>
             <h2 className="text-2xl font-bold tracking-tight text-foreground">
-              Create your account
+              {t("auth.signupTitle")}
             </h2>
             <p className="text-sm text-muted-foreground">
               Get started with ElyXen today — free for 14 days
@@ -128,7 +130,7 @@ export function SignupPage() {
 
             <div className="space-y-1.5">
               <label htmlFor="fullName" className="text-xs font-medium text-foreground">
-                Full name
+                {t("auth.fullName")}
               </label>
               <Input
                 id="fullName"
@@ -145,7 +147,7 @@ export function SignupPage() {
 
             <div className="space-y-1.5">
               <label htmlFor="email" className="text-xs font-medium text-foreground">
-                Work email
+                {t("auth.email")}
               </label>
               <Input
                 id="email"
@@ -162,7 +164,7 @@ export function SignupPage() {
 
             <div className="space-y-1.5">
               <label htmlFor="password" className="text-xs font-medium text-foreground">
-                Password
+                {t("auth.password")}
               </label>
               <div className="relative">
                 <Input
@@ -213,7 +215,7 @@ export function SignupPage() {
 
             <div className="space-y-1.5">
               <label htmlFor="confirmPassword" className="text-xs font-medium text-foreground">
-                Confirm password
+                {t("auth.confirmPassword")}
               </label>
               <div className="relative">
                 <Input
@@ -246,11 +248,11 @@ export function SignupPage() {
               {isSubmitting ? (
                 <>
                   <LoadingSpinner className="h-4 w-4" />
-                  Creating account...
+                  {t("common.loading")}
                 </>
               ) : (
                 <>
-                  Create account
+                  {t("auth.signup")}
                   <ArrowRight className="h-4 w-4" />
                 </>
               )}
@@ -258,12 +260,12 @@ export function SignupPage() {
           </form>
 
           <p className="text-center text-sm text-muted-foreground">
-            Already have an account?{" "}
+            {t("auth.hasAccount")}{" "}
             <Link
               to="/login"
               className="font-medium text-primary hover:underline underline-offset-4"
             >
-              Sign in
+              {t("auth.login")}
             </Link>
           </p>
 

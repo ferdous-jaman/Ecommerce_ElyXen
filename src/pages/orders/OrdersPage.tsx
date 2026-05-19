@@ -17,6 +17,7 @@ import {
 import { OrderStatusBadge, PaymentStatusBadge } from "@/components/shared/StatusBadge";
 import { TableRowSkeleton } from "@/components/shared/Skeleton";
 import { useOrders } from "@/hooks/useOrders";
+import { useTranslation } from "@/hooks/useTranslation";
 import { recentOrders } from "@/lib/mockData";
 import { formatCurrency, formatDate, getInitials } from "@/lib/utils";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -33,6 +34,7 @@ type OrderWithCustomer = {
 
 export function OrdersPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { orders, total, page, pageSize, filters, isLoading, setPage, setFilters } = useOrders();
   const [searchInput, setSearchInput] = useState(filters.search ?? "");
 
@@ -63,7 +65,7 @@ export function OrdersPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Orders"
+        title={t("orders.title")}
         description={`${displayTotal} order${displayTotal !== 1 ? "s" : ""}`}
       />
 
@@ -71,7 +73,7 @@ export function OrdersPage() {
         <form onSubmit={handleSearchSubmit} className="relative flex-1 max-w-sm">
           <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground pointer-events-none" />
           <Input
-            placeholder="Search by order number..."
+            placeholder={t("orders.searchPlaceholder")}
             className="pl-8 h-9 text-sm pr-8"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
@@ -88,24 +90,24 @@ export function OrdersPage() {
           <Select value={filters.status ?? "all"} onValueChange={(v) => setFilters({ status: v as typeof filters.status })}>
             <SelectTrigger className="h-9 w-36 text-sm"><SelectValue placeholder="Status" /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="processing">Processing</SelectItem>
-              <SelectItem value="shipped">Shipped</SelectItem>
-              <SelectItem value="delivered">Delivered</SelectItem>
-              <SelectItem value="cancelled">Cancelled</SelectItem>
-              <SelectItem value="refunded">Refunded</SelectItem>
+              <SelectItem value="all">{t("orders.allStatuses")}</SelectItem>
+              <SelectItem value="pending">{t("orders.pending")}</SelectItem>
+              <SelectItem value="processing">{t("orders.processing")}</SelectItem>
+              <SelectItem value="shipped">{t("orders.shipped")}</SelectItem>
+              <SelectItem value="delivered">{t("orders.delivered")}</SelectItem>
+              <SelectItem value="cancelled">{t("orders.cancelled")}</SelectItem>
+              <SelectItem value="refunded">{t("orders.refunded")}</SelectItem>
             </SelectContent>
           </Select>
 
           <Select value={filters.payment_status ?? "all"} onValueChange={(v) => setFilters({ payment_status: v as typeof filters.payment_status })}>
             <SelectTrigger className="h-9 w-36 text-sm"><SelectValue placeholder="Payment" /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Payments</SelectItem>
-              <SelectItem value="pending">Unpaid</SelectItem>
-              <SelectItem value="paid">Paid</SelectItem>
-              <SelectItem value="failed">Failed</SelectItem>
-              <SelectItem value="refunded">Refunded</SelectItem>
+              <SelectItem value="all">{t("orders.allPayments")}</SelectItem>
+              <SelectItem value="pending">{t("orders.unpaid")}</SelectItem>
+              <SelectItem value="paid">{t("orders.paid")}</SelectItem>
+              <SelectItem value="failed">{t("orders.failed")}</SelectItem>
+              <SelectItem value="refunded">{t("orders.refunded")}</SelectItem>
             </SelectContent>
           </Select>
 
@@ -123,10 +125,10 @@ export function OrdersPage() {
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/50">
-                <TableHead>Order</TableHead>
-                <TableHead>Customer</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Payment</TableHead>
+                <TableHead>{t("orders.order")}</TableHead>
+                <TableHead>{t("orders.customer")}</TableHead>
+                <TableHead>{t("orders.status")}</TableHead>
+                <TableHead>{t("orders.payment")}</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead className="text-right">Total</TableHead>
               </TableRow>

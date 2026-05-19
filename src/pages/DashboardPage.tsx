@@ -24,6 +24,7 @@ import {
 } from "@/lib/mockData";
 import { formatCurrency, formatNumber, formatPercentage, getInitials, formatDate } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTranslation } from "@/hooks/useTranslation";
 import type { ComponentType } from "react";
 import { cn } from "@/lib/utils";
 
@@ -56,49 +57,50 @@ function RevenueTooltip({ active, payload, label }: RevenueTooltipProps) {
 export function DashboardPage() {
   const navigate = useNavigate();
   const { profile, user } = useAuth();
+  const { t } = useTranslation();
   const [revenueTab, setRevenueTab] = useState<"monthly" | "weekly">("monthly");
 
   const now = new Date();
   const hour = now.getHours();
-  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  const greeting = hour < 12 ? t("dashboard.greeting.morning") : hour < 17 ? t("dashboard.greeting.afternoon") : t("dashboard.greeting.evening");
   const displayName = profile?.full_name?.split(" ")[0] ?? user?.email?.split("@")[0] ?? "there";
 
   const stats = [
     {
-      title: "Total Revenue",
+      title: t("dashboard.totalRevenue"),
       value: formatCurrency(324200),
       change: 18.2,
-      sub: "vs last month",
+      sub: t("dashboard.vsLastMonth"),
       icon: DollarSign,
       color: "text-indigo-500",
       bg: "bg-indigo-500/10",
       href: "/dashboard/analytics",
     },
     {
-      title: "Total Orders",
+      title: t("dashboard.totalOrders"),
       value: formatNumber(810),
       change: 12.5,
-      sub: "vs last month",
+      sub: t("dashboard.vsLastMonth"),
       icon: ShoppingCart,
       color: "text-emerald-500",
       bg: "bg-emerald-500/10",
       href: "/dashboard/orders",
     },
     {
-      title: "Active Customers",
+      title: t("dashboard.activeCustomers"),
       value: formatNumber(3842),
       change: 8.1,
-      sub: "vs last month",
+      sub: t("dashboard.vsLastMonth"),
       icon: Users,
       color: "text-violet-500",
       bg: "bg-violet-500/10",
       href: "/dashboard/customers",
     },
     {
-      title: "Avg. Order Value",
+      title: t("dashboard.avgOrderValue"),
       value: formatCurrency(3840),
       change: -2.4,
-      sub: "vs last month",
+      sub: t("dashboard.vsLastMonth"),
       icon: TrendingUp,
       color: "text-amber-500",
       bg: "bg-amber-500/10",
@@ -114,10 +116,10 @@ export function DashboardPage() {
     <div className="space-y-6">
       <PageHeader
         title={`${greeting}, ${displayName} 👋`}
-        description="Here's what's happening with your store today."
+        description={t("dashboard.revenueOverview")}
         actions={
           <Button size="sm" className="gap-1.5" onClick={() => navigate("/dashboard/products/new")}>
-            <Plus className="h-3.5 w-3.5" /> Add Product
+            <Plus className="h-3.5 w-3.5" /> {t("dashboard.newProduct")}
           </Button>
         }
       />
@@ -163,13 +165,13 @@ export function DashboardPage() {
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div>
-                <CardTitle className="text-base">Revenue Overview</CardTitle>
+                <CardTitle className="text-base">{t("dashboard.revenueOverview")}</CardTitle>
                 <CardDescription>Revenue and order volume trends</CardDescription>
               </div>
               <Tabs value={revenueTab} onValueChange={(v) => setRevenueTab(v as "monthly" | "weekly")}>
                 <TabsList className="h-7">
-                  <TabsTrigger value="monthly" className="text-xs h-6 px-2.5">Monthly</TabsTrigger>
-                  <TabsTrigger value="weekly" className="text-xs h-6 px-2.5">Weekly</TabsTrigger>
+                  <TabsTrigger value="monthly" className="text-xs h-6 px-2.5">{t("dashboard.monthly")}</TabsTrigger>
+                  <TabsTrigger value="weekly" className="text-xs h-6 px-2.5">{t("dashboard.weekly")}</TabsTrigger>
                 </TabsList>
               </Tabs>
             </div>
@@ -201,7 +203,7 @@ export function DashboardPage() {
         {/* Order Status Breakdown */}
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Order Status</CardTitle>
+            <CardTitle className="text-base">{t("dashboard.orderStatus")}</CardTitle>
             <CardDescription>{formatNumber(totalOrders)} orders this month</CardDescription>
           </CardHeader>
           <CardContent className="pt-0">
@@ -242,7 +244,7 @@ export function DashboardPage() {
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Customer Growth</CardTitle>
+            <CardTitle className="text-base">{t("dashboard.customerGrowth")}</CardTitle>
             <CardDescription>New vs returning — last 6 months</CardDescription>
           </CardHeader>
           <CardContent className="pb-2 pl-1">
@@ -266,12 +268,12 @@ export function DashboardPage() {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-base">Top Products</CardTitle>
+                <CardTitle className="text-base">{t("dashboard.topProducts")}</CardTitle>
                 <CardDescription>Best performing by revenue</CardDescription>
               </div>
               <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 text-muted-foreground"
                 onClick={() => navigate("/dashboard/products")}>
-                View all <ChevronRight className="h-3.5 w-3.5" />
+                {t("dashboard.viewAll")} <ChevronRight className="h-3.5 w-3.5" />
               </Button>
             </div>
           </CardHeader>
@@ -312,12 +314,12 @@ export function DashboardPage() {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-base">Recent Orders</CardTitle>
+                <CardTitle className="text-base">{t("dashboard.recentOrders")}</CardTitle>
                 <CardDescription>Latest orders from your store</CardDescription>
               </div>
               <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 text-muted-foreground"
                 onClick={() => navigate("/dashboard/orders")}>
-                View all <ChevronRight className="h-3.5 w-3.5" />
+                {t("dashboard.viewAll")} <ChevronRight className="h-3.5 w-3.5" />
               </Button>
             </div>
           </CardHeader>
@@ -357,7 +359,7 @@ export function DashboardPage() {
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
                 <AlertTriangle className="h-4 w-4 text-amber-500" />
-                Low Stock Alerts
+                {t("dashboard.inventoryAlerts")}
               </CardTitle>
               <CardDescription>{inventoryAlerts.length} products need restocking</CardDescription>
             </CardHeader>
@@ -375,7 +377,7 @@ export function DashboardPage() {
               ))}
               <Button variant="outline" size="sm" className="w-full h-7 text-xs mt-1"
                 onClick={() => navigate("/dashboard/inventory")}>
-                View Inventory
+                {t("inventory.title")}
               </Button>
             </CardContent>
           </Card>
@@ -383,7 +385,7 @@ export function DashboardPage() {
           {/* Activity Feed */}
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-base">Activity</CardTitle>
+              <CardTitle className="text-base">{t("dashboard.activityFeed")}</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
               <div className="px-6">

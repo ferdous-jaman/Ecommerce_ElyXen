@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { LoadingSpinner } from "@/components/shared/LoadingScreen";
 import { useAuth } from "@/contexts/AuthContext";
 import { authService } from "@/services/authService";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const loginSchema = z.object({
   email: z.string().email("Enter a valid email address"),
@@ -21,6 +22,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 export function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -104,10 +106,10 @@ export function LoginPage() {
               <span className="font-bold text-foreground">ElyXen</span>
             </div>
             <h2 className="text-2xl font-bold tracking-tight text-foreground">
-              Welcome back
+              {t("auth.loginTitle")}
             </h2>
             <p className="text-sm text-muted-foreground">
-              Sign in to your account to continue
+              {t("auth.loginSubtitle")}
             </p>
           </div>
 
@@ -121,7 +123,7 @@ export function LoginPage() {
 
             <div className="space-y-1.5">
               <label htmlFor="email" className="text-xs font-medium text-foreground">
-                Email address
+                {t("auth.email")}
               </label>
               <Input
                 id="email"
@@ -139,13 +141,13 @@ export function LoginPage() {
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <label htmlFor="password" className="text-xs font-medium text-foreground">
-                  Password
+                  {t("auth.password")}
                 </label>
                 <button
                   type="button"
                   className="text-xs text-primary hover:underline underline-offset-4"
                 >
-                  Forgot password?
+                  {t("auth.forgotPassword")}
                 </button>
               </div>
               <div className="relative">
@@ -183,11 +185,11 @@ export function LoginPage() {
               {isSubmitting ? (
                 <>
                   <LoadingSpinner className="h-4 w-4" />
-                  Signing in...
+                  {t("common.loading")}
                 </>
               ) : (
                 <>
-                  Sign in
+                  {t("auth.login")}
                   <ArrowRight className="h-4 w-4" />
                 </>
               )}
@@ -195,12 +197,12 @@ export function LoginPage() {
           </form>
 
           <p className="text-center text-sm text-muted-foreground">
-            Don't have an account?{" "}
+            {t("auth.noAccount")}{" "}
             <Link
               to="/signup"
               className="font-medium text-primary hover:underline underline-offset-4"
             >
-              Create account
+              {t("auth.signup")}
             </Link>
           </p>
 

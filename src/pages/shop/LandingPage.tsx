@@ -2,15 +2,18 @@ import { Truck, Shield, HeadphonesIcon, RotateCcw } from "lucide-react";
 import { HeroCarousel } from "@/components/shop/HeroCarousel";
 import { CategoryGrid } from "@/components/shop/CategoryGrid";
 import { TrendingProducts } from "@/components/shop/TrendingProducts";
-
-const trustBadges = [
-  { icon: Truck,          title: "Free Shipping",    desc: "On orders over ৳999" },
-  { icon: Shield,         title: "Secure Payment",   desc: "100% safe & encrypted" },
-  { icon: HeadphonesIcon, title: "24/7 Support",     desc: "Always here to help" },
-  { icon: RotateCcw,      title: "Easy Returns",     desc: "7-day hassle-free return" },
-];
+import { useTranslation } from "@/hooks/useTranslation";
 
 export function LandingPage() {
+  const { t } = useTranslation();
+
+  const trustBadges = [
+    { icon: Truck,          title: t("shop.freeShipping"),   desc: t("shop.freeShippingDesc") },
+    { icon: Shield,         title: t("shop.securePayment"),  desc: t("shop.securePaymentDesc") },
+    { icon: HeadphonesIcon, title: t("shop.support247"),     desc: t("shop.support247Desc") },
+    { icon: RotateCcw,      title: t("shop.easyReturns"),    desc: t("shop.easyReturnsDesc") },
+  ];
+
   return (
     <div className="animate-fade-in">
       {/* Hero Carousel */}

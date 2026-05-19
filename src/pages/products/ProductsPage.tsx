@@ -24,12 +24,14 @@ import { ProductStatusBadge } from "@/components/shared/StatusBadge";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { TableRowSkeleton } from "@/components/shared/Skeleton";
 import { useProducts } from "@/hooks/useProducts";
+import { useTranslation } from "@/hooks/useTranslation";
 import { productService } from "@/services/productService";
 import { formatCurrency } from "@/lib/utils";
 import type { Product } from "@/types/database";
 
 export function ProductsPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { products, categories, total, page, pageSize, filters, isLoading, setPage, setFilters, removeProduct } = useProducts();
   const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -64,13 +66,13 @@ export function ProductsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Products"
+        title={t("products.title")}
         description={`${total} product${total !== 1 ? "s" : ""} in your catalog`}
         actions={
           <Button size="sm" className="gap-1.5" asChild>
             <Link to="/dashboard/products/new">
               <Plus className="h-3.5 w-3.5" />
-              Add Product
+              {t("products.addProduct")}
             </Link>
           </Button>
         }
@@ -80,7 +82,7 @@ export function ProductsPage() {
         <form onSubmit={handleSearchSubmit} className="relative flex-1 max-w-sm">
           <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground pointer-events-none" />
           <Input
-            placeholder="Search products..."
+            placeholder={t("products.searchPlaceholder")}
             className="pl-8 h-9 text-sm pr-8"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
@@ -102,10 +104,10 @@ export function ProductsPage() {
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="draft">Draft</SelectItem>
-              <SelectItem value="archived">Archived</SelectItem>
+              <SelectItem value="all">{t("products.allStatuses")}</SelectItem>
+              <SelectItem value="active">{t("products.active")}</SelectItem>
+              <SelectItem value="draft">{t("products.draft")}</SelectItem>
+              <SelectItem value="archived">{t("products.archived")}</SelectItem>
             </SelectContent>
           </Select>
 
@@ -117,7 +119,7 @@ export function ProductsPage() {
               <SelectValue placeholder="Category" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
+              <SelectItem value="all">{t("products.allCategories")}</SelectItem>
               {categories.map((c) => (
                 <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
               ))}
@@ -139,11 +141,11 @@ export function ProductsPage() {
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/50">
-                <TableHead className="w-[300px]">Product</TableHead>
-                <TableHead>SKU</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Price</TableHead>
+                <TableHead className="w-[300px]">{t("products.title")}</TableHead>
+                <TableHead>{t("products.sku")}</TableHead>
+                <TableHead>{t("products.category")}</TableHead>
+                <TableHead>{t("orders.status")}</TableHead>
+                <TableHead className="text-right">{t("products.price")}</TableHead>
                 <TableHead className="w-10" />
               </TableRow>
             </TableHeader>
@@ -158,14 +160,14 @@ export function ProductsPage() {
                         <Package className="h-7 w-7 text-muted-foreground" />
                       </div>
                       <div className="text-center">
-                        <p className="text-sm font-medium">No products found</p>
+                        <p className="text-sm font-medium">{t("products.noProducts")}</p>
                         <p className="text-xs text-muted-foreground mt-1">
                           {hasActiveFilters ? "Try adjusting your filters" : "Add your first product to get started"}
                         </p>
                       </div>
                       {!hasActiveFilters && (
                         <Button size="sm" className="gap-1.5 mt-1" asChild>
-                          <Link to="/dashboard/products/new"><Plus className="h-3.5 w-3.5" />Add Product</Link>
+                          <Link to="/dashboard/products/new"><Plus className="h-3.5 w-3.5" />{t("products.addProduct")}</Link>
                         </Button>
                       )}
                     </div>
@@ -264,9 +266,9 @@ export function ProductsPage() {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(null)}
-        title="Delete Product"
-        description={`Are you sure you want to delete "${deleteTarget?.name}"? This action cannot be undone.`}
-        confirmLabel="Delete"
+        title={t("products.deleteTitle")}
+        description={`Are you sure you want to delete "${deleteTarget?.name}"? ${t("products.deleteConfirm")}`}
+        confirmLabel={t("common.delete")}
         isLoading={isDeleting}
         onConfirm={handleDelete}
       />

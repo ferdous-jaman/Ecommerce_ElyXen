@@ -22,6 +22,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { cn, getInitials } from "@/lib/utils";
 import { formatDate } from "@/lib/utils";
+import { useTranslation } from "@/hooks/useTranslation";
 
 type StaffStatus = "active" | "frozen" | "on_leave" | "terminated";
 
@@ -63,6 +64,7 @@ const ROLE_LABELS: Record<string, string> = {
 };
 
 export function StaffManagementPage() {
+  const { t } = useTranslation();
   const [staffList, setStaffList] = useState<StaffMember[]>(MOCK_STAFF);
   const [search, setSearch] = useState("");
   const [selectedStaff, setSelectedStaff] = useState<StaffMember | null>(null);
@@ -104,11 +106,11 @@ export function StaffManagementPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Staff Management"
+        title={t("staff.title")}
         description="Monitor, manage and control staff accounts and performance."
         actions={
           <Button size="sm" className="gap-1.5" onClick={() => setInviteOpen(true)}>
-            <UserPlus className="h-3.5 w-3.5" /> Invite Staff
+            <UserPlus className="h-3.5 w-3.5" /> {t("staff.inviteStaff")}
           </Button>
         }
       />

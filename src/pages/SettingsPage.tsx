@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useTranslation } from "@/hooks/useTranslation";
 import { toast } from "sonner";
 import {
   User, Bell, Shield, Palette, Globe, Camera, Eye, EyeOff, Check,
@@ -41,6 +42,7 @@ export function SettingsPage() {
   const isAdmin = profile?.role === "admin";
   const isStaff = profile?.role === "staff";
   const { theme, setTheme, resolvedTheme, accentTheme, setAccentTheme } = useTheme();
+  const { t } = useTranslation();
   const [showOldPw, setShowOldPw] = useState(false);
   const [showNewPw, setShowNewPw] = useState(false);
   const [notifs, setNotifs] = useState<Record<NotifKey, boolean>>(defaultNotifs);
@@ -71,7 +73,7 @@ export function SettingsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Settings"
+        title={t("settings.title")}
         description="Manage your account and application preferences."
       />
 
@@ -79,24 +81,24 @@ export function SettingsPage() {
         <TabsList className="h-9 w-full sm:w-auto gap-0.5 flex-wrap">
           {isStaff && (
             <TabsTrigger value="staff" className="gap-1.5 text-xs">
-              <Briefcase className="h-3.5 w-3.5" />My Work
+              <Briefcase className="h-3.5 w-3.5" />{t("settings.myWork")}
             </TabsTrigger>
           )}
           <TabsTrigger value="profile" className="gap-1.5 text-xs">
-            <User className="h-3.5 w-3.5" />Profile
+            <User className="h-3.5 w-3.5" />{t("settings.profile")}
           </TabsTrigger>
           <TabsTrigger value="appearance" className="gap-1.5 text-xs">
-            <Palette className="h-3.5 w-3.5" />Appearance
+            <Palette className="h-3.5 w-3.5" />{t("settings.appearance")}
           </TabsTrigger>
           <TabsTrigger value="notifications" className="gap-1.5 text-xs">
-            <Bell className="h-3.5 w-3.5" />Notifications
+            <Bell className="h-3.5 w-3.5" />{t("settings.notifications")}
           </TabsTrigger>
           <TabsTrigger value="security" className="gap-1.5 text-xs">
-            <Shield className="h-3.5 w-3.5" />Security
+            <Shield className="h-3.5 w-3.5" />{t("settings.security")}
           </TabsTrigger>
           {isAdmin && (
             <TabsTrigger value="store" className="gap-1.5 text-xs">
-              <Globe className="h-3.5 w-3.5" />Store
+              <Globe className="h-3.5 w-3.5" />{t("settings.store")}
             </TabsTrigger>
           )}
         </TabsList>
