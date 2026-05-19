@@ -30,6 +30,7 @@ const OrderDetailPage   = lazy(() => import("@/pages/orders/OrderDetailPage").th
 const CustomersPage     = lazy(() => import("@/pages/customers/CustomersPage").then((m) => ({ default: m.CustomersPage })));
 const CustomerDetailPage = lazy(() => import("@/pages/customers/CustomerDetailPage").then((m) => ({ default: m.CustomerDetailPage })));
 const InventoryPage     = lazy(() => import("@/pages/inventory/InventoryPage").then((m) => ({ default: m.InventoryPage })));
+const BannerManagerPage = lazy(() => import("@/pages/banners/BannerManagerPage").then((m) => ({ default: m.BannerManagerPage })));
 
 function SuspenseRoute({ children }: { children: React.ReactNode }) {
   return (
@@ -113,6 +114,10 @@ export const router = createBrowserRouter([
       {
         path: "customers/:id",
         element: <SuspenseRoute><ProtectedRoute requiredPermission="customers:read"><CustomerDetailPage /></ProtectedRoute></SuspenseRoute>,
+      },
+      {
+        path: "banners",
+        element: <SuspenseRoute><ProtectedRoute requiredPermission="products:write"><BannerManagerPage /></ProtectedRoute></SuspenseRoute>,
       },
       {
         path: "inventory",

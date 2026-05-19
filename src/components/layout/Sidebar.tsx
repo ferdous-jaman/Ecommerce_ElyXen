@@ -11,6 +11,7 @@ import {
   ChevronRight,
   Zap,
   FolderOpen,
+  Images,
 } from "lucide-react";
 import { cn, getInitials } from "@/lib/utils";
 import { useSidebarStore } from "@/store/useSidebarStore";
@@ -23,13 +24,14 @@ import { useAuth } from "@/contexts/AuthContext";
 import type { NavItem } from "@/types";
 
 const navItems: NavItem[] = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Products", href: "/dashboard/products", icon: Package },
+  { label: "Dashboard",  href: "/dashboard",           icon: LayoutDashboard },
+  { label: "Products",   href: "/dashboard/products",   icon: Package },
   { label: "Categories", href: "/dashboard/categories", icon: FolderOpen },
-  { label: "Orders", href: "/dashboard/orders", icon: ShoppingCart },
-  { label: "Customers", href: "/dashboard/customers", icon: Users },
-  { label: "Inventory", href: "/dashboard/inventory", icon: Warehouse },
-  { label: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
+  { label: "Banners",    href: "/dashboard/banners",    icon: Images },
+  { label: "Orders",     href: "/dashboard/orders",     icon: ShoppingCart },
+  { label: "Customers",  href: "/dashboard/customers",  icon: Users },
+  { label: "Inventory",  href: "/dashboard/inventory",  icon: Warehouse },
+  { label: "Analytics",  href: "/dashboard/analytics",  icon: BarChart3 },
 ];
 
 const bottomNavItems: NavItem[] = [

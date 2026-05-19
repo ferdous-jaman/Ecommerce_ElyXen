@@ -53,7 +53,17 @@ CREATE POLICY "banners_delete_admin_staff"
     )
   );
 
+-- Ensure the helper function exists (safe to re-run)
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = now();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
 -- updated_at trigger for banners
+DROP TRIGGER IF EXISTS banners_updated_at ON public.banners;
 CREATE TRIGGER banners_updated_at
   BEFORE UPDATE ON public.banners
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
