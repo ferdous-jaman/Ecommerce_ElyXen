@@ -1,16 +1,17 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
-  ArrowLeft, Package, Tag, ShoppingBag, LogIn, CheckCircle2, AlertTriangle,
+  ArrowLeft, Package, Tag, ShoppingCart, Zap, CheckCircle2, AlertTriangle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/shared/Skeleton";
 import { supabase } from "@/lib/supabase";
 import { formatCurrency } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCartStore } from "@/store/useCartStore";
+import { toast } from "sonner";
 import type { Product } from "@/types/database";
 
 type ProductWithInventory = Product & {
@@ -22,6 +23,7 @@ export function ShopProductDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+  const { addItem, openCart } = useCartStore();
   const [product, setProduct] = useState<ProductWithInventory | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -66,10 +68,12 @@ export function ShopProductDetailPage() {
     );
   }
 
-  const stock = product.inventory?.[0]?.quantity ?? 0;
-  const lowThreshold = product.inventory?.[0]?.low_stock_threshold ?? 10;
-  const isLowStock = stock > 0 && stock <= lowThreshold;
-  const isOutOfStock = stock === 0;
+  const invRow = product.inventory?.[0];
+  const hasInventory = invRow !== undefined && invRow !== null;
+  const stock = invRow?.quantity ?? null;
+  const lowThreshold = invRow?.low_stock_threshold ?? 10;
+  const isOutOfStock = hasInventory && stock !== null && stock === 0;
+  const isLowStock = hasInventory && stock !== null && stock > 0 && stock <= lowThreshold;
   const discount = product.compare_price && product.compare_price > product.price
     ? Math.round(((product.compare_price - product.price) / product.compare_price) * 100)
     : null;
@@ -154,7 +158,7 @@ export function ShopProductDetailPage() {
             ) : isLowStock ? (
               <><AlertTriangle className="h-4 w-4 text-amber-500" /><span className="text-sm font-medium text-amber-500">Only {stock} left in stock</span></>
             ) : (
-              <><CheckCircle2 className="h-4 w-4 text-emerald-500" /><span className="text-sm font-medium text-emerald-500">In Stock ({stock} available)</span></>
+              <><CheckCircle2 className="h-4 w-4 text-emerald-500" /><span className="text-sm font-medium text-emerald-500">In Stock</span></>
             )}
           </div>
 
@@ -180,33 +184,45 @@ export function ShopProductDetailPage() {
           <Separator />
 
           {/* CTA */}
-          {isAuthenticated ? (
-            <div className="space-y-3">
-              <Button className="w-full gap-2" size="lg" disabled={isOutOfStock}>
-                <ShoppingBag className="h-5 w-5" />
+          <div className="space-y-3">
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                className="flex-1 gap-2"
+                size="lg"
+                disabled={isOutOfStock}
+                onClick={() => {
+                  if (!product) return;
+                  addItem(product as Product);
+                  openCart();
+                  toast.success("Added to cart!", { description: product.name });
+                }}
+              >
+                <ShoppingCart className="h-5 w-5" />
                 {isOutOfStock ? "Out of Stock" : "Add to Cart"}
               </Button>
-              <p className="text-xs text-center text-muted-foreground">
-                Free shipping on orders over $50
-              </p>
+              <Button
+                className="flex-1 gap-2"
+                size="lg"
+                disabled={isOutOfStock}
+                onClick={() => {
+                  if (!product) return;
+                  addItem(product as Product);
+                  if (!isAuthenticated) {
+                    navigate("/login?returnTo=/checkout");
+                    return;
+                  }
+                  navigate("/checkout");
+                }}
+              >
+                <Zap className="h-5 w-5" />
+                Buy Now
+              </Button>
             </div>
-          ) : (
-            <Card className="border-border bg-muted/30">
-              <CardContent className="pt-5 text-center space-y-3">
-                <p className="text-sm font-medium text-foreground">Sign in to place an order</p>
-                <p className="text-xs text-muted-foreground">Create a free account to purchase this product and track your orders.</p>
-                <div className="flex gap-2 justify-center">
-                  <Button size="sm" onClick={() => navigate("/login")} className="gap-2">
-                    <LogIn className="h-4 w-4" />
-                    Sign In
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={() => navigate("/signup")}>
-                    Create Account
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+            <p className="text-xs text-center text-muted-foreground">
+              Free shipping on orders over ৳999
+            </p>
+          </div>
         </div>
       </div>
     </div>
