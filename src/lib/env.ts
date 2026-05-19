@@ -1,6 +1,6 @@
 const requiredEnvVars = {
-  VITE_SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL,
-  VITE_SUPABASE_ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY,
+  NEXT_PUBLIC_SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL || import.meta.env.NEXT_PUBLIC_SUPABASE_URL,
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
 } as const;
 
 function validateEnv() {
@@ -22,8 +22,8 @@ validateEnv();
 
 export const env = {
   supabase: {
-    url: requiredEnvVars.VITE_SUPABASE_URL as string,
-    anonKey: requiredEnvVars.VITE_SUPABASE_ANON_KEY as string,
+    url: requiredEnvVars.NEXT_PUBLIC_SUPABASE_URL as string,
+    anonKey: requiredEnvVars.NEXT_PUBLIC_SUPABASE_ANON_KEY as string,
   },
   app: {
     name: (import.meta.env.VITE_APP_NAME as string) ?? "ElyXen",
