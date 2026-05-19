@@ -24,22 +24,18 @@ function ProductCard({ product }: { product: Product }) {
 
   function handleAddToCart(e: React.MouseEvent) {
     e.stopPropagation();
-    if (!isAuthenticated) {
-      navigate(`/login?returnTo=/shop/product/${product.id}`);
-      return;
-    }
     addItem(product);
     openCart();
-    toast.success(`${product.name} added to cart!`);
+    toast.success(`Added to cart!`, { description: product.name });
   }
 
   function handleBuyNow(e: React.MouseEvent) {
     e.stopPropagation();
+    addItem(product);
     if (!isAuthenticated) {
-      navigate(`/login?returnTo=/shop/product/${product.id}`);
+      navigate(`/login?returnTo=/checkout`);
       return;
     }
-    addItem(product);
     navigate("/checkout");
   }
 

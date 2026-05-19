@@ -9,16 +9,17 @@ type PublicRouteProps = {
 
 export function PublicRoute({
   children,
-  redirectTo = "/",
+  redirectTo,
 }: PublicRouteProps) {
-  const { isAuthenticated, isInitialized, isLoading } = useAuth();
+  const { isAuthenticated, isInitialized, isLoading, profile } = useAuth();
 
   if (!isInitialized || isLoading) {
     return <LoadingScreen />;
   }
 
   if (isAuthenticated) {
-    return <Navigate to={redirectTo} replace />;
+    const destination = redirectTo ?? (profile?.role === "customer" ? "/shop" : "/dashboard");
+    return <Navigate to={destination} replace />;
   }
 
   return <>{children}</>;

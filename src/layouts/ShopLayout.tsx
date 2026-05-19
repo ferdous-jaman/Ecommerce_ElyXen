@@ -1,17 +1,34 @@
 import { Outlet, Link, useNavigate } from "react-router-dom";
-import { LayoutDashboard, LogIn, UserPlus, Zap, Menu, X, ShoppingCart } from "lucide-react";
+import { LayoutDashboard, LogIn, UserPlus, Zap, Menu, X, ShoppingCart, User, ChevronDown, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCartStore } from "@/store/useCartStore";
 import { CartDrawer } from "@/components/shop/CartDrawer";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
+import { getInitials } from "@/lib/utils";
 
 export function ShopLayout() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, profile, logout } = useAuth();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
+  const accountRef = useRef<HTMLDivElement>(null);
   const { totalItems, toggleCart } = useCartStore();
   const cartCount = totalItems();
+
+  const isCustomer = profile?.role === "customer";
+  const isAdminOrStaff = profile?.role === "admin" || profile?.role === "staff";
+  const displayName = profile?.full_name ?? profile?.email?.split("@")[0] ?? "Account";
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (accountRef.current && !accountRef.current.contains(e.target as Node)) {
+        setAccountOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -39,12 +56,7 @@ export function ShopLayout() {
 
             {/* Desktop Actions */}
             <div className="hidden md:flex items-center gap-3">
-              {isAuthenticated ? (
-                <Button size="sm" variant="outline" onClick={() => navigate("/dashboard")} className="gap-2">
-                  <LayoutDashboard className="h-4 w-4" />
-                  Dashboard
-                </Button>
-              ) : (
+              {!isAuthenticated && (
                 <>
                   <Button variant="ghost" size="sm" onClick={() => navigate("/login")} className="gap-2">
                     <LogIn className="h-4 w-4" />
@@ -55,6 +67,46 @@ export function ShopLayout() {
                     Get Started
                   </Button>
                 </>
+              )}
+              {isAuthenticated && isAdminOrStaff && (
+                <Button size="sm" variant="outline" onClick={() => navigate("/dashboard")} className="gap-2">
+                  <LayoutDashboard className="h-4 w-4" />
+                  Dashboard
+                </Button>
+              )}
+              {isAuthenticated && isCustomer && (
+                <div className="relative" ref={accountRef}>
+                  <button
+                    onClick={() => setAccountOpen((o) => !o)}
+                    className="flex items-center gap-2 rounded-lg border border-border px-3 py-1.5 text-sm font-medium hover:bg-accent transition-colors"
+                  >
+                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+                      {getInitials(displayName)}
+                    </div>
+                    <span className="max-w-[80px] truncate">{displayName}</span>
+                    <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                  </button>
+                  {accountOpen && (
+                    <div className="absolute right-0 top-full mt-1.5 w-48 rounded-xl border border-border bg-background shadow-lg py-1 z-50">
+                      <div className="px-3 py-2 border-b border-border">
+                        <p className="text-xs font-semibold text-foreground truncate">{displayName}</p>
+                        <p className="text-xs text-muted-foreground truncate">{profile?.email}</p>
+                      </div>
+                      <button
+                        onClick={() => { setAccountOpen(false); navigate("/orders"); }}
+                        className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-accent transition-colors"
+                      >
+                        <User className="h-4 w-4" /> My Orders
+                      </button>
+                      <button
+                        onClick={async () => { setAccountOpen(false); await logout(); navigate("/"); }}
+                        className="flex w-full items-center gap-2 px-3 py-2 text-sm text-destructive hover:bg-destructive/10 transition-colors"
+                      >
+                        <LogOut className="h-4 w-4" /> Sign Out
+                      </button>
+                    </div>
+                  )}
+                </div>
               )}
               {/* Cart button */}
               <button
@@ -102,12 +154,7 @@ export function ShopLayout() {
             <Link to="/shop" className="block text-sm font-medium text-muted-foreground hover:text-foreground" onClick={() => setMobileOpen(false)}>
               Shop
             </Link>
-            {isAuthenticated ? (
-              <Button size="sm" variant="outline" className="w-full gap-2" onClick={() => { navigate("/dashboard"); setMobileOpen(false); }}>
-                <LayoutDashboard className="h-4 w-4" />
-                Dashboard
-              </Button>
-            ) : (
+            {!isAuthenticated && (
               <div className="flex flex-col gap-2">
                 <Button variant="outline" size="sm" className="w-full gap-2" onClick={() => { navigate("/login"); setMobileOpen(false); }}>
                   <LogIn className="h-4 w-4" />
@@ -116,6 +163,27 @@ export function ShopLayout() {
                 <Button size="sm" className="w-full gap-2" onClick={() => { navigate("/signup"); setMobileOpen(false); }}>
                   <UserPlus className="h-4 w-4" />
                   Get Started
+                </Button>
+              </div>
+            )}
+            {isAuthenticated && isAdminOrStaff && (
+              <Button size="sm" variant="outline" className="w-full gap-2" onClick={() => { navigate("/dashboard"); setMobileOpen(false); }}>
+                <LayoutDashboard className="h-4 w-4" />
+                Dashboard
+              </Button>
+            )}
+            {isAuthenticated && isCustomer && (
+              <div className="rounded-lg border border-border p-3 space-y-2">
+                <p className="text-xs font-semibold text-foreground">{displayName}</p>
+                <p className="text-xs text-muted-foreground">{profile?.email}</p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full gap-2 text-destructive border-destructive/30 hover:bg-destructive/10"
+                  onClick={async () => { setMobileOpen(false); await logout(); navigate("/"); }}
+                >
+                  <LogOut className="h-4 w-4" />
+                  Sign Out
                 </Button>
               </div>
             )}
