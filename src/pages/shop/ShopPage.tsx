@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Search, ShoppingCart, Zap, Package, X, ChevronRight } from "lucide-react";
+import { Search, ShoppingCart, Zap, Package, X, ChevronRight, Heart } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/shared/Skeleton";
 import { supabase } from "@/lib/supabase";
 import { formatCurrency } from "@/lib/utils";
 import { useCartStore } from "@/store/useCartStore";
+import { useWishlistStore } from "@/store/useWishlistStore";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import type { Product } from "@/types/database";
@@ -20,9 +21,11 @@ type Category = { id: string; name: string; slug: string };
 function ProductCard({ product }: { product: Product }) {
   const navigate = useNavigate();
   const { addItem, openCart } = useCartStore();
+  const { toggleItem, hasItem } = useWishlistStore();
   const { isAuthenticated } = useAuth();
   const discount = product.compare_price && product.compare_price > product.price
     ? Math.round(((product.compare_price - product.price) / product.compare_price) * 100) : null;
+  const wished = hasItem(product.id);
 
   function handleAddToCart(e: React.MouseEvent) {
     e.stopPropagation();
@@ -57,6 +60,14 @@ function ProductCard({ product }: { product: Product }) {
             -{discount}%
           </Badge>
         )}
+        <button
+          onClick={(e) => { e.stopPropagation(); toggleItem(product); toast.success(wished ? "Removed from wishlist" : "Added to wishlist!"); }}
+          className={`absolute top-2 right-2 flex h-7 w-7 items-center justify-center rounded-full shadow transition-colors ${
+            wished ? "bg-rose-500 text-white" : "bg-background/90 text-muted-foreground hover:text-rose-500"
+          }`}
+        >
+          <Heart className={`h-3.5 w-3.5 ${wished ? "fill-current" : ""}`} />
+        </button>
       </div>
       <CardContent className="p-3 space-y-2">
         <h3 className="font-semibold text-foreground text-sm leading-tight line-clamp-2 group-hover:text-primary transition-colors">

@@ -14,6 +14,8 @@ const ShopProductDetailPage     = lazy(() => import("@/pages/shop/ShopProductDet
 const CheckoutPage              = lazy(() => import("@/pages/shop/CheckoutPage").then((m) => ({ default: m.CheckoutPage })));
 const MyOrdersPage              = lazy(() => import("@/pages/account/MyOrdersPage").then((m) => ({ default: m.MyOrdersPage })));
 const CustomerOrderDetailPage   = lazy(() => import("@/pages/account/OrderDetailPage").then((m) => ({ default: m.CustomerOrderDetailPage })));
+const ProfilePage               = lazy(() => import("@/pages/account/ProfilePage").then((m) => ({ default: m.ProfilePage })));
+const WishlistPage              = lazy(() => import("@/pages/account/WishlistPage").then((m) => ({ default: m.WishlistPage })));
 
 // Dashboard pages
 const DashboardPage     = lazy(() => import("@/pages/DashboardPage").then((m) => ({ default: m.DashboardPage })));
@@ -55,6 +57,8 @@ export const router = createBrowserRouter([
       { path: "checkout", element: <SuspenseRoute><ProtectedRoute><CheckoutPage /></ProtectedRoute></SuspenseRoute> },
       { path: "account/orders", element: <SuspenseRoute><ProtectedRoute><MyOrdersPage /></ProtectedRoute></SuspenseRoute> },
       { path: "account/orders/:id", element: <SuspenseRoute><ProtectedRoute><CustomerOrderDetailPage /></ProtectedRoute></SuspenseRoute> },
+      { path: "account/profile", element: <SuspenseRoute><ProtectedRoute><ProfilePage /></ProtectedRoute></SuspenseRoute> },
+      { path: "account/wishlist", element: <SuspenseRoute><WishlistPage /></SuspenseRoute> },
     ],
   },
 
