@@ -3,7 +3,7 @@ import {
   LayoutDashboard, LogIn, UserPlus, Zap, Menu, X, ShoppingCart,
   User, ChevronDown, LogOut, Heart, Package, Search, Phone,
   Facebook, Instagram, Twitter, Truck, Shield, HeadphonesIcon, RotateCcw,
-  ClipboardList, Settings,
+  ClipboardList, Settings, MapPin, CreditCard,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -137,10 +137,12 @@ export function ShopLayout() {
 
                       {/* Menu items */}
                       {[
-                        { icon: User, label: "My Profile", path: "/account/profile" },
-                        { icon: ClipboardList, label: "My Orders", path: "/account/orders" },
-                        { icon: Heart, label: "Wishlist", path: "/account/wishlist", badge: wCount > 0 ? wCount : undefined },
-                        { icon: Settings, label: "Account Settings", path: "/account/profile" },
+                        { icon: User,         label: "My Profile",       path: "/account/profile" },
+                        { icon: ClipboardList,label: "My Orders",         path: "/account/orders" },
+                        { icon: Heart,        label: "Wishlist",          path: "/account/wishlist", badge: wCount > 0 ? wCount : undefined },
+                        { icon: MapPin,       label: "Saved Addresses",   path: "/account/addresses" },
+                        { icon: CreditCard,   label: "Payment Methods",   path: "/account/payment-methods" },
+                        { icon: Settings,     label: "Account Settings",  path: "/account/profile" },
                       ].map(({ icon: Icon, label, path, badge }) => (
                         <button key={label}
                           onClick={() => { setAccountOpen(false); navigate(path); }}
@@ -280,9 +282,11 @@ export function ShopLayout() {
                     </div>
                   </div>
                   {[
-                    { icon: User, label: "My Profile", path: "/account/profile" },
-                    { icon: ClipboardList, label: "My Orders", path: "/account/orders" },
-                    { icon: Heart, label: "Wishlist", path: "/account/wishlist" },
+                    { icon: User,          label: "My Profile",      path: "/account/profile" },
+                    { icon: ClipboardList, label: "My Orders",        path: "/account/orders" },
+                    { icon: Heart,         label: "Wishlist",         path: "/account/wishlist" },
+                    { icon: MapPin,        label: "Addresses",        path: "/account/addresses" },
+                    { icon: CreditCard,    label: "Payment Methods",  path: "/account/payment-methods" },
                   ].map(({ icon: Icon, label, path }) => (
                     <button key={label} onClick={() => { navigate(path); closeAll(); }}
                       className="flex w-full items-center gap-2 px-2 py-2 text-sm text-foreground hover:bg-accent rounded-lg transition-colors">
@@ -371,6 +375,8 @@ export function ShopLayout() {
                     <li><Link to="/account/profile" className="text-sm text-muted-foreground hover:text-foreground transition-colors">My Profile</Link></li>
                     <li><Link to="/account/orders" className="text-sm text-muted-foreground hover:text-foreground transition-colors">My Orders</Link></li>
                     <li><Link to="/account/wishlist" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Wishlist</Link></li>
+                    <li><Link to="/account/addresses" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Saved Addresses</Link></li>
+                    <li><Link to="/account/payment-methods" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Payment Methods</Link></li>
                     <li><Link to="/checkout" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Checkout</Link></li>
                   </>
                 ) : (

@@ -75,16 +75,17 @@ export function CartDrawer() {
             <div className="space-y-4">
               {items.map(({ product, quantity }) => (
                 <div key={product.id} className="flex gap-3">
-                  {/* Image */}
-                  <div className="h-18 w-18 shrink-0 overflow-hidden rounded-xl bg-muted border border-border">
+                  {/* Image — fixed 64×64, never grows */}
+                  <div className="shrink-0 overflow-hidden rounded-xl bg-muted border border-border" style={{ width: 64, height: 64, minWidth: 64, minHeight: 64 }}>
                     {product.images?.[0] ? (
                       <img
                         src={product.images[0]}
                         alt={product.name}
-                        className="h-full w-full object-cover"
+                        className="object-cover"
+                        style={{ width: 64, height: 64, display: "block" }}
                       />
                     ) : (
-                      <div className="flex h-full w-full items-center justify-center">
+                      <div className="flex items-center justify-center" style={{ width: 64, height: 64 }}>
                         <ShoppingBag className="h-6 w-6 text-muted-foreground/30" />
                       </div>
                     )}
