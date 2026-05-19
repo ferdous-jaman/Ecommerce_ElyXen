@@ -68,7 +68,7 @@ export function ProductsPage() {
         description={`${total} product${total !== 1 ? "s" : ""} in your catalog`}
         actions={
           <Button size="sm" className="gap-1.5" asChild>
-            <Link to="/products/new">
+            <Link to="/dashboard/products/new">
               <Plus className="h-3.5 w-3.5" />
               Add Product
             </Link>
@@ -165,7 +165,7 @@ export function ProductsPage() {
                       </div>
                       {!hasActiveFilters && (
                         <Button size="sm" className="gap-1.5 mt-1" asChild>
-                          <Link to="/products/new"><Plus className="h-3.5 w-3.5" />Add Product</Link>
+                          <Link to="/dashboard/products/new"><Plus className="h-3.5 w-3.5" />Add Product</Link>
                         </Button>
                       )}
                     </div>
@@ -176,7 +176,7 @@ export function ProductsPage() {
                   const category = categories.find((c) => c.id === product.category_id);
                   return (
                     <TableRow key={product.id} className="cursor-pointer hover:bg-muted/40"
-                      onClick={() => navigate(`/products/${product.id}`)}>
+                      onClick={() => navigate(`/dashboard/products/${product.id}`)}>
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center shrink-0 overflow-hidden border">
@@ -217,10 +217,10 @@ export function ProductsPage() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end" className="w-40">
-                            <DropdownMenuItem onClick={() => navigate(`/products/${product.id}`)}>
+                            <DropdownMenuItem onClick={() => navigate(`/dashboard/products/${product.id}`)}>
                               View details
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => navigate(`/products/${product.id}/edit`)}>
+                            <DropdownMenuItem onClick={() => navigate(`/dashboard/products/${product.id}/edit`)}>
                               <Pencil className="h-3.5 w-3.5 mr-2" />Edit
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />

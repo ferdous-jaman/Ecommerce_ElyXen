@@ -66,13 +66,13 @@ export function CreateProductPage() {
 
     upsertProduct(result.data!);
     toast.success("Product created", { description: `"${data.name}" has been added.` });
-    navigate(`/products/${result.data!.id}`);
+    navigate(`/dashboard/products/${result.data!.id}`);
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
-        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => navigate("/products")}>
+        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => navigate("/dashboard/products")}>
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div>
@@ -86,7 +86,7 @@ export function CreateProductPage() {
         isSubmitting={isSubmitting}
         submitLabel="Create Product"
         onSubmit={handleSubmit}
-        onCancel={() => navigate("/products")}
+        onCancel={() => navigate("/dashboard/products")}
         onImageAdd={handleImageAdd}
         onImageRemove={handleImageRemove}
         isUploadingImage={isUploadingImage}

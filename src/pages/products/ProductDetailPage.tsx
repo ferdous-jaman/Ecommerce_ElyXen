@@ -48,7 +48,7 @@ export function ProductDetailPage() {
     } else {
       removeProduct(id);
       toast.success("Product deleted");
-      navigate("/products");
+      navigate("/dashboard/products");
     }
   }
 
@@ -57,7 +57,7 @@ export function ProductDetailPage() {
     <div className="flex flex-col items-center justify-center py-24 gap-4">
       <Package className="h-10 w-10 text-muted-foreground" />
       <p className="text-muted-foreground">Product not found</p>
-      <Button variant="outline" onClick={() => navigate("/products")}>Back to Products</Button>
+      <Button variant="outline" onClick={() => navigate("/dashboard/products")}>Back to Products</Button>
     </div>
   );
 
@@ -70,7 +70,7 @@ export function ProductDetailPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3 min-w-0">
-          <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" onClick={() => navigate("/products")}>
+          <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" onClick={() => navigate("/dashboard/products")}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div className="min-w-0">
@@ -82,7 +82,7 @@ export function ProductDetailPage() {
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <Button variant="outline" size="sm" className="gap-1.5" onClick={() => navigate(`/products/${id}/edit`)}>
+          <Button variant="outline" size="sm" className="gap-1.5" onClick={() => navigate(`/dashboard/products/${id}/edit`)}>
             <Pencil className="h-3.5 w-3.5" /> Edit
           </Button>
           <Button variant="outline" size="sm" className="gap-1.5 text-destructive hover:text-destructive" onClick={() => setShowDelete(true)}>

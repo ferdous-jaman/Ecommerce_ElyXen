@@ -65,7 +65,7 @@ export function EditProductPage() {
 
     upsertProduct(result.data!);
     toast.success("Product updated");
-    navigate(`/products/${id}`);
+    navigate(`/dashboard/products/${id}`);
   }
 
   if (isLoading) return <LoadingScreen />;
@@ -74,7 +74,7 @@ export function EditProductPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
-        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => navigate(`/products/${id}`)}>
+        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => navigate(`/dashboard/products/${id}`)}>
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div>
@@ -89,7 +89,7 @@ export function EditProductPage() {
         isSubmitting={isSubmitting}
         submitLabel="Save Changes"
         onSubmit={handleSubmit}
-        onCancel={() => navigate(`/products/${id}`)}
+        onCancel={() => navigate(`/dashboard/products/${id}`)}
         onImageAdd={handleImageAdd}
         onImageRemove={handleImageRemove}
         isUploadingImage={isUploadingImage}
