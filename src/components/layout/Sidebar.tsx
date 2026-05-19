@@ -12,6 +12,7 @@ import {
   Zap,
   FolderOpen,
   Images,
+  ShieldAlert,
 } from "lucide-react";
 import { cn, getInitials } from "@/lib/utils";
 import { useSidebarStore } from "@/store/useSidebarStore";
@@ -31,7 +32,8 @@ const navItems: NavItem[] = [
   { label: "Orders",     href: "/dashboard/orders",     icon: ShoppingCart },
   { label: "Customers",  href: "/dashboard/customers",  icon: Users },
   { label: "Inventory",  href: "/dashboard/inventory",  icon: Warehouse },
-  { label: "Analytics",  href: "/dashboard/analytics",  icon: BarChart3 },
+  { label: "Analytics",  href: "/dashboard/analytics",   icon: BarChart3 },
+  { label: "Fraud Check", href: "/dashboard/fraud-check", icon: ShieldAlert },
 ];
 
 const bottomNavItems: NavItem[] = [

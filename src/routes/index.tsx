@@ -37,7 +37,8 @@ const OrderDetailPage   = lazy(() => import("@/pages/orders/OrderDetailPage").th
 const CustomersPage     = lazy(() => import("@/pages/customers/CustomersPage").then((m) => ({ default: m.CustomersPage })));
 const CustomerDetailPage = lazy(() => import("@/pages/customers/CustomerDetailPage").then((m) => ({ default: m.CustomerDetailPage })));
 const InventoryPage     = lazy(() => import("@/pages/inventory/InventoryPage").then((m) => ({ default: m.InventoryPage })));
-const BannerManagerPage = lazy(() => import("@/pages/banners/BannerManagerPage").then((m) => ({ default: m.BannerManagerPage })));
+const BannerManagerPage  = lazy(() => import("@/pages/banners/BannerManagerPage").then((m) => ({ default: m.BannerManagerPage })));
+const FraudCheckPage     = lazy(() => import("@/pages/fraud/FraudCheckPage").then((m) => ({ default: m.FraudCheckPage })));
 
 function SuspenseRoute({ children }: { children: React.ReactNode }) {
   return (
@@ -140,6 +141,10 @@ export const router = createBrowserRouter([
       {
         path: "analytics",
         element: <SuspenseRoute><ProtectedRoute requiredPermission="analytics:read"><AnalyticsPage /></ProtectedRoute></SuspenseRoute>,
+      },
+      {
+        path: "fraud-check",
+        element: <SuspenseRoute><ProtectedRoute requiredPermission="orders:read"><FraudCheckPage /></ProtectedRoute></SuspenseRoute>,
       },
       {
         path: "settings",

@@ -43,10 +43,10 @@ function ProductCard({ product }: { product: Product }) {
 
   return (
     <Card
-      className="group cursor-pointer border-border bg-card hover:shadow-lg transition-all duration-200 overflow-hidden"
+      className="group cursor-pointer border-border bg-card hover:shadow-lg transition-all duration-200 overflow-hidden flex flex-col h-full"
       onClick={() => navigate(`/shop/product/${product.id}`)}
     >
-      <div className="relative aspect-square bg-muted overflow-hidden">
+      <div className="relative aspect-square bg-muted overflow-hidden shrink-0">
         {product.images?.[0] ? (
           <img src={product.images[0]} alt={product.name}
             className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
@@ -69,17 +69,17 @@ function ProductCard({ product }: { product: Product }) {
           <Heart className={`h-3.5 w-3.5 ${wished ? "fill-current" : ""}`} />
         </button>
       </div>
-      <CardContent className="p-3 space-y-2">
-        <h3 className="font-semibold text-foreground text-sm leading-tight line-clamp-2 group-hover:text-primary transition-colors">
+      <CardContent className="p-3 flex flex-col flex-1">
+        <h3 className="font-semibold text-foreground text-sm leading-tight line-clamp-2 group-hover:text-primary transition-colors min-h-[2.5rem]">
           {product.name}
         </h3>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 mt-1.5">
           <span className="font-bold text-foreground">{formatCurrency(product.price)}</span>
           {product.compare_price && product.compare_price > product.price && (
             <span className="text-xs text-muted-foreground line-through">{formatCurrency(product.compare_price)}</span>
           )}
         </div>
-        <div className="flex gap-1.5 pt-1">
+        <div className="flex gap-1.5 mt-auto pt-3">
           <Button size="sm" variant="outline" className="flex-1 gap-1 text-xs h-8" onClick={handleAddToCart}>
             <ShoppingCart className="h-3.5 w-3.5" /> Cart
           </Button>

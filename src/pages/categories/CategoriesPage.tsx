@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Plus, Pencil, Trash2, FolderOpen, MoreHorizontal } from "lucide-react";
+import { Plus, Pencil, Trash2, FolderOpen, MoreHorizontal, ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,10 +26,17 @@ import { categoryService } from "@/services/categoryService";
 import { formatDate } from "@/lib/utils";
 import type { Category } from "@/types/database";
 
+const CATEGORY_EMOJI: Record<string, string> = {
+  electronics: "💻", fashion: "👗", "home-living": "🏠", sports: "⚽",
+  beauty: "💄", books: "📚", toys: "🧸", food: "🍔", health: "💊",
+  automotive: "🚗", jewelry: "💍", pets: "🐾",
+};
+
 const categorySchema = z.object({
   name: z.string().min(1, "Name is required").max(100),
   description: z.string().optional(),
   parent_id: z.string().optional().nullable(),
+  image_url: z.string().url("Must be a valid URL").optional().or(z.literal("")),
 });
 type CategoryFormData = z.infer<typeof categorySchema>;
 
@@ -42,9 +49,10 @@ export function CategoriesPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<CategoryFormData>({
+  const { register, handleSubmit, reset, watch, formState: { errors } } = useForm<CategoryFormData>({
     resolver: zodResolver(categorySchema),
   });
+  const watchedImageUrl = watch("image_url");
 
   const fetchCategories = useCallback(async () => {
     setIsLoading(true);
@@ -57,13 +65,13 @@ export function CategoriesPage() {
 
   function openCreate() {
     setEditTarget(null);
-    reset({ name: "", description: "", parent_id: null });
+    reset({ name: "", description: "", parent_id: null, image_url: "" });
     setDialogOpen(true);
   }
 
   function openEdit(cat: Category) {
     setEditTarget(cat);
-    reset({ name: cat.name, description: cat.description ?? "", parent_id: cat.parent_id });
+    reset({ name: cat.name, description: cat.description ?? "", parent_id: cat.parent_id, image_url: (cat as Category & { image_url?: string }).image_url ?? "" });
     setDialogOpen(true);
   }
 
@@ -77,7 +85,8 @@ export function CategoriesPage() {
         slug,
         description: data.description || null,
         parent_id: data.parent_id || null,
-      });
+        ...(data.image_url ? { image_url: data.image_url } : {}),
+      } as Parameters<typeof categoryService.update>[1]);
       if (result.error) toast.error("Update failed", { description: result.error });
       else {
         setCategories((prev) => prev.map((c) => c.id === editTarget.id ? result.data! : c));
@@ -90,7 +99,8 @@ export function CategoriesPage() {
         slug,
         description: data.description || null,
         parent_id: data.parent_id || null,
-      });
+        ...(data.image_url ? { image_url: data.image_url } : {}),
+      } as Parameters<typeof categoryService.create>[0]);
       if (result.error) toast.error("Create failed", { description: result.error });
       else {
         setCategories((prev) => [...prev, result.data!]);
@@ -132,6 +142,7 @@ export function CategoriesPage() {
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">
+              <TableHead className="w-12">Image</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Description</TableHead>
               <TableHead>Parent</TableHead>
@@ -141,10 +152,10 @@ export function CategoriesPage() {
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              Array.from({ length: 5 }).map((_, i) => <TableRowSkeleton key={i} cols={5} />)
+              Array.from({ length: 5 }).map((_, i) => <TableRowSkeleton key={i} cols={6} />)
             ) : categories.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5}>
+                <TableCell colSpan={6}>
                   <div className="flex flex-col items-center justify-center py-12 gap-3">
                     <div className="rounded-xl bg-muted p-4"><FolderOpen className="h-7 w-7 text-muted-foreground" /></div>
                     <div className="text-center">
@@ -160,8 +171,21 @@ export function CategoriesPage() {
             ) : (
               categories.map((cat) => {
                 const parent = categories.find((c) => c.id === cat.parent_id);
+                const imgUrl = (cat as Category & { image_url?: string }).image_url;
+                const emoji = CATEGORY_EMOJI[cat.slug] ?? null;
                 return (
                   <TableRow key={cat.id}>
+                    <TableCell>
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-muted overflow-hidden">
+                        {imgUrl ? (
+                          <img src={imgUrl} alt={cat.name} className="h-full w-full object-cover" />
+                        ) : emoji ? (
+                          <span className="text-xl">{emoji}</span>
+                        ) : (
+                          <ImageIcon className="h-4 w-4 text-muted-foreground/50" />
+                        )}
+                      </div>
+                    </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         {cat.parent_id && <span className="ml-3 text-muted-foreground">↳</span>}
@@ -211,6 +235,25 @@ export function CategoriesPage() {
             <div className="space-y-1.5">
               <Label htmlFor="cat-desc">Description</Label>
               <Textarea id="cat-desc" placeholder="Optional description..." className="min-h-[80px]" {...register("description")} />
+            </div>
+            {/* Category image */}
+            <div className="space-y-1.5">
+              <Label htmlFor="cat-img" className="flex items-center gap-1.5">
+                <ImageIcon className="h-3.5 w-3.5" /> Category Image URL
+              </Label>
+              <Input id="cat-img" placeholder="https://example.com/image.jpg" {...register("image_url")} />
+              {errors.image_url && <p className="text-xs text-destructive">{errors.image_url.message}</p>}
+              {watchedImageUrl && (
+                <div className="flex items-center gap-3 mt-2 p-2 rounded-lg border border-border bg-muted/30">
+                  <img
+                    src={watchedImageUrl}
+                    alt="Preview"
+                    className="h-12 w-12 rounded-md object-cover border border-border"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                  />
+                  <p className="text-xs text-muted-foreground">Image preview</p>
+                </div>
+              )}
             </div>
             {rootCategories.length > 0 && (
               <div className="space-y-1.5">

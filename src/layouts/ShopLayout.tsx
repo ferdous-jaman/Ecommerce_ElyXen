@@ -11,6 +11,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useCartStore } from "@/store/useCartStore";
 import { useWishlistStore } from "@/store/useWishlistStore";
 import { CartDrawer } from "@/components/shop/CartDrawer";
+import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { useState, useRef, useEffect, type FormEvent } from "react";
 import { getInitials } from "@/lib/utils";
 
@@ -170,6 +171,9 @@ export function ShopLayout() {
                   )}
                 </div>
               )}
+
+              {/* Theme Toggle — available to everyone */}
+              <ThemeToggle />
 
               {/* Wishlist icon */}
               {isAuthenticated && isCustomer && (
