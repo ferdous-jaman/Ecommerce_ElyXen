@@ -93,7 +93,7 @@ export function ShopLayout() {
                         <p className="text-xs text-muted-foreground truncate">{profile?.email}</p>
                       </div>
                       <button
-                        onClick={() => { setAccountOpen(false); navigate("/orders"); }}
+                        onClick={() => { setAccountOpen(false); navigate("/account/orders"); }}
                         className="flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-accent transition-colors"
                       >
                         <User className="h-4 w-4" /> My Orders

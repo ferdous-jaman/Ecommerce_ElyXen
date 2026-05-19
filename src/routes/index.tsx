@@ -8,9 +8,12 @@ import { LoadingScreen } from "@/components/shared/LoadingScreen";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 
 // Public shop pages
-const LandingPage            = lazy(() => import("@/pages/shop/LandingPage").then((m) => ({ default: m.LandingPage })));
-const ShopPage               = lazy(() => import("@/pages/shop/ShopPage").then((m) => ({ default: m.ShopPage })));
-const ShopProductDetailPage  = lazy(() => import("@/pages/shop/ShopProductDetailPage").then((m) => ({ default: m.ShopProductDetailPage })));
+const LandingPage               = lazy(() => import("@/pages/shop/LandingPage").then((m) => ({ default: m.LandingPage })));
+const ShopPage                  = lazy(() => import("@/pages/shop/ShopPage").then((m) => ({ default: m.ShopPage })));
+const ShopProductDetailPage     = lazy(() => import("@/pages/shop/ShopProductDetailPage").then((m) => ({ default: m.ShopProductDetailPage })));
+const CheckoutPage              = lazy(() => import("@/pages/shop/CheckoutPage").then((m) => ({ default: m.CheckoutPage })));
+const MyOrdersPage              = lazy(() => import("@/pages/account/MyOrdersPage").then((m) => ({ default: m.MyOrdersPage })));
+const CustomerOrderDetailPage   = lazy(() => import("@/pages/account/OrderDetailPage").then((m) => ({ default: m.CustomerOrderDetailPage })));
 
 // Dashboard pages
 const DashboardPage     = lazy(() => import("@/pages/DashboardPage").then((m) => ({ default: m.DashboardPage })));
@@ -49,17 +52,20 @@ export const router = createBrowserRouter([
       { index: true, element: <SuspenseRoute><LandingPage /></SuspenseRoute> },
       { path: "shop", element: <SuspenseRoute><ShopPage /></SuspenseRoute> },
       { path: "shop/product/:id", element: <SuspenseRoute><ShopProductDetailPage /></SuspenseRoute> },
+      { path: "checkout", element: <SuspenseRoute><ProtectedRoute><CheckoutPage /></ProtectedRoute></SuspenseRoute> },
+      { path: "account/orders", element: <SuspenseRoute><ProtectedRoute><MyOrdersPage /></ProtectedRoute></SuspenseRoute> },
+      { path: "account/orders/:id", element: <SuspenseRoute><ProtectedRoute><CustomerOrderDetailPage /></ProtectedRoute></SuspenseRoute> },
     ],
   },
 
   // ── Auth routes ─────────────────────────────────────────────
   {
     path: "/login",
-    element: <SuspenseRoute><PublicRoute redirectTo="/dashboard"><LoginPage /></PublicRoute></SuspenseRoute>,
+    element: <SuspenseRoute><PublicRoute><LoginPage /></PublicRoute></SuspenseRoute>,
   },
   {
     path: "/signup",
-    element: <SuspenseRoute><PublicRoute redirectTo="/dashboard"><SignupPage /></PublicRoute></SuspenseRoute>,
+    element: <SuspenseRoute><PublicRoute><SignupPage /></PublicRoute></SuspenseRoute>,
   },
   {
     path: "/unauthorized",

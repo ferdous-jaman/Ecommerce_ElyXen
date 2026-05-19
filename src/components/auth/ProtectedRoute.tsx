@@ -26,8 +26,9 @@ export function ProtectedRoute({
   }
 
   if (!isAuthenticated) {
+    const returnTo = location.pathname + location.search;
     return (
-      <Navigate to={fallback} state={{ from: location.pathname }} replace />
+      <Navigate to={`${fallback}?returnTo=${encodeURIComponent(returnTo)}`} replace />
     );
   }
 
