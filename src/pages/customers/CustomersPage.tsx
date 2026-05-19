@@ -4,6 +4,7 @@ import { Search, Users, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -11,7 +12,8 @@ import {
 } from "@/components/ui/table";
 import { TableRowSkeleton } from "@/components/shared/Skeleton";
 import { customerService } from "@/services/customerService";
-import { formatCurrency, formatDate, getInitials } from "@/lib/utils";
+import { mockCustomers, type MockCustomer } from "@/lib/mockData";
+import { formatCurrency, getInitials } from "@/lib/utils";
 import type { Customer } from "@/types/database";
 
 export function CustomersPage() {
@@ -33,13 +35,22 @@ export function CustomersPage() {
 
   useEffect(() => { fetchCustomers(); }, [fetchCustomers]);
 
-  const totalPages = Math.ceil(total / pageSize);
+  // If DB has no customers, show demo mock data
+  const usingMock = !isLoading && customers.length === 0;
+  const filteredMock: MockCustomer[] = search
+    ? mockCustomers.filter((c) =>
+        c.name.toLowerCase().includes(search.toLowerCase()) ||
+        c.email.toLowerCase().includes(search.toLowerCase())
+      )
+    : mockCustomers;
+  const displayCount = usingMock ? filteredMock.length : total;
+  const totalPages = usingMock ? 1 : Math.ceil(total / pageSize);
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Customers"
-        description={`${total} customer${total !== 1 ? "s" : ""}`}
+        description={`${displayCount} customer${displayCount !== 1 ? "s" : ""}`}
       />
 
       <div className="flex items-center gap-3">
@@ -62,34 +73,59 @@ export function CustomersPage() {
             <TableRow className="bg-muted/50">
               <TableHead>Customer</TableHead>
               <TableHead>Phone</TableHead>
+              <TableHead>City</TableHead>
               <TableHead className="text-right">Orders</TableHead>
               <TableHead className="text-right">Total Spent</TableHead>
-              <TableHead>Joined</TableHead>
+              <TableHead>Status</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              Array.from({ length: 8 }).map((_, i) => <TableRowSkeleton key={i} cols={5} />)
-            ) : customers.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5}>
-                  <div className="flex flex-col items-center justify-center py-16 gap-3">
-                    <div className="rounded-xl bg-muted p-4"><Users className="h-7 w-7 text-muted-foreground" /></div>
-                    <div className="text-center">
-                      <p className="text-sm font-medium">No customers found</p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {search ? "Try a different search term" : "Customers will appear here once added"}
-                      </p>
+              Array.from({ length: 8 }).map((_, i) => <TableRowSkeleton key={i} cols={6} />)
+            ) : usingMock ? (
+              filteredMock.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6}>
+                    <div className="flex flex-col items-center justify-center py-16 gap-3">
+                      <div className="rounded-xl bg-muted p-4"><Users className="h-7 w-7 text-muted-foreground" /></div>
+                      <p className="text-sm text-muted-foreground">No customers match your search</p>
                     </div>
-                  </div>
-                </TableCell>
-              </TableRow>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredMock.map((c) => (
+                  <TableRow key={c.id} className="cursor-pointer hover:bg-muted/40">
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-8 w-8 shrink-0">
+                          <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">{getInitials(c.name)}</AvatarFallback>
+                        </Avatar>
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium">{c.name}</p>
+                          <p className="text-[11px] text-muted-foreground truncate">{c.email}</p>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">{c.phone}</TableCell>
+                    <TableCell className="text-sm text-muted-foreground">{c.city}</TableCell>
+                    <TableCell className="text-right text-sm font-medium">{c.totalOrders}</TableCell>
+                    <TableCell className="text-right text-sm font-semibold">{formatCurrency(c.totalSpent)}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className={c.status === "active"
+                        ? "text-[10px] bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20"
+                        : "text-[10px] bg-muted text-muted-foreground"}>
+                        {c.status}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )
             ) : (
               customers.map((customer) => {
                 const fullName = `${customer.first_name} ${customer.last_name}`;
                 return (
                   <TableRow key={customer.id} className="cursor-pointer hover:bg-muted/40"
-                    onClick={() => navigate(`/customers/${customer.id}`)}>
+                    onClick={() => navigate(`/dashboard/customers/${customer.id}`)}>
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <Avatar className="h-8 w-8 shrink-0">
@@ -104,9 +140,10 @@ export function CustomersPage() {
                       </div>
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">{customer.phone ?? "—"}</TableCell>
+                    <TableCell className="text-sm text-muted-foreground">—</TableCell>
                     <TableCell className="text-right text-sm font-medium">{customer.total_orders}</TableCell>
                     <TableCell className="text-right text-sm font-semibold">{formatCurrency(customer.total_spent)}</TableCell>
-                    <TableCell className="text-sm text-muted-foreground">{formatDate(customer.created_at)}</TableCell>
+                    <TableCell><Badge variant="outline" className="text-[10px] bg-emerald-50 text-emerald-700 border-emerald-200">active</Badge></TableCell>
                   </TableRow>
                 );
               })

@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { User, Bell, Shield, Palette, Globe, Camera, Eye, EyeOff, Check } from "lucide-react";
+import {
+  User, Bell, Shield, Palette, Globe, Camera, Eye, EyeOff, Check,
+  Clock, Briefcase, CheckCircle2, ShoppingCart, Package, Users,
+  ClipboardList, TrendingUp, CalendarDays,
+} from "lucide-react";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,6 +14,7 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { useAuth } from "@/contexts/AuthContext";
@@ -61,8 +66,11 @@ export function SettingsPage() {
         description="Manage your account and application preferences."
       />
 
-      <Tabs defaultValue="profile" className="space-y-6">
-        <TabsList className="h-9 w-full sm:w-auto gap-0.5">
+      <Tabs defaultValue="staff" className="space-y-6">
+        <TabsList className="h-9 w-full sm:w-auto gap-0.5 flex-wrap">
+          <TabsTrigger value="staff" className="gap-1.5 text-xs">
+            <Briefcase className="h-3.5 w-3.5" />Staff
+          </TabsTrigger>
           <TabsTrigger value="profile" className="gap-1.5 text-xs">
             <User className="h-3.5 w-3.5" />Profile
           </TabsTrigger>
@@ -76,6 +84,204 @@ export function SettingsPage() {
             <Shield className="h-3.5 w-3.5" />Security
           </TabsTrigger>
         </TabsList>
+
+        {/* Staff Tab */}
+        <TabsContent value="staff" className="space-y-4 mt-0">
+
+          {/* Performance overview */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {[
+              { label: "Orders Processed", value: "142", icon: ShoppingCart,  color: "text-indigo-500",  bg: "bg-indigo-500/10" },
+              { label: "Items Packed",     value: "389", icon: Package,       color: "text-emerald-500", bg: "bg-emerald-500/10" },
+              { label: "Customers Helped", value: "67",  icon: Users,         color: "text-violet-500",  bg: "bg-violet-500/10" },
+              { label: "Tasks Completed",  value: "94%", icon: CheckCircle2,  color: "text-amber-500",   bg: "bg-amber-500/10" },
+            ].map(({ label, value, icon: Icon, color, bg }) => (
+              <Card key={label}>
+                <CardContent className="p-4 flex items-center gap-3">
+                  <div className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-xl", bg)}>
+                    <Icon className={cn("h-4 w-4", color)} />
+                  </div>
+                  <div>
+                    <p className="text-lg font-black tracking-tight text-foreground">{value}</p>
+                    <p className="text-[10px] text-muted-foreground leading-tight">{label}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Shift Schedule */}
+          <Card>
+            <CardHeader className="pb-4">
+              <CardTitle className="text-base flex items-center gap-2">
+                <CalendarDays className="h-4 w-4 text-primary" /> This Week's Shift Schedule
+              </CardTitle>
+              <CardDescription>Your assigned work hours for the current week</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="divide-y divide-border">
+                {[
+                  { day: "Monday",    date: "May 19", shift: "09:00 – 17:00", status: "completed",  hours: 8 },
+                  { day: "Tuesday",   date: "May 20", shift: "09:00 – 17:00", status: "active",     hours: 8 },
+                  { day: "Wednesday", date: "May 21", shift: "10:00 – 18:00", status: "upcoming",   hours: 8 },
+                  { day: "Thursday",  date: "May 22", shift: "09:00 – 17:00", status: "upcoming",   hours: 8 },
+                  { day: "Friday",    date: "May 23", shift: "09:00 – 15:00", status: "upcoming",   hours: 6 },
+                  { day: "Saturday",  date: "May 24", shift: "—",             status: "off",        hours: 0 },
+                  { day: "Sunday",    date: "May 25", shift: "—",             status: "off",        hours: 0 },
+                ].map(({ day, date, shift, status, hours }) => (
+                  <div key={day} className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
+                    <div className="flex items-center gap-3">
+                      <div className={cn("flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[10px] font-bold",
+                        status === "active"    ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30" :
+                        status === "completed" ? "bg-muted text-muted-foreground" :
+                        status === "off"       ? "bg-muted/50 text-muted-foreground/50" :
+                        "bg-primary/10 text-primary"
+                      )}>
+                        {day.slice(0, 2)}
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-foreground">{day} <span className="text-muted-foreground font-normal text-xs">({date})</span></p>
+                        <p className="text-xs text-muted-foreground flex items-center gap-1">
+                          <Clock className="h-3 w-3" />{shift}
+                          {hours > 0 && <span className="ml-1">· {hours}h</span>}
+                        </p>
+                      </div>
+                    </div>
+                    <Badge variant="outline" className={cn("text-[10px] shrink-0",
+                      status === "active"    ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20" :
+                      status === "completed" ? "bg-muted text-muted-foreground" :
+                      status === "off"       ? "bg-muted/30 text-muted-foreground/60" :
+                      "bg-primary/5 text-primary border-primary/20"
+                    )}>
+                      {status === "active" ? "On Shift" : status === "completed" ? "Done" : status === "off" ? "Day Off" : "Upcoming"}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+              <Separator className="my-3" />
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">Total this week</span>
+                <span className="font-bold text-foreground">38 hours</span>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Quick Actions */}
+          <Card>
+            <CardHeader className="pb-4">
+              <CardTitle className="text-base flex items-center gap-2">
+                <TrendingUp className="h-4 w-4 text-primary" /> Quick Actions
+              </CardTitle>
+              <CardDescription>Common staff tasks — one click access</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {[
+                  { label: "Process Orders",    icon: ShoppingCart,  color: "text-indigo-500",  bg: "bg-indigo-500/10",  action: "/dashboard/orders" },
+                  { label: "Update Inventory",  icon: Package,       color: "text-amber-500",   bg: "bg-amber-500/10",   action: "/dashboard/inventory" },
+                  { label: "View Customers",    icon: Users,         color: "text-violet-500",  bg: "bg-violet-500/10",  action: "/dashboard/customers" },
+                  { label: "Check Analytics",   icon: TrendingUp,    color: "text-emerald-500", bg: "bg-emerald-500/10", action: "/dashboard/analytics" },
+                  { label: "Manage Products",   icon: ClipboardList, color: "text-rose-500",    bg: "bg-rose-500/10",    action: "/dashboard/products" },
+                  { label: "Today's Schedule",  icon: CalendarDays,  color: "text-sky-500",     bg: "bg-sky-500/10",     action: "#" },
+                ].map(({ label, icon: Icon, color, bg, action }) => (
+                  <button
+                    key={label}
+                    onClick={() => { if (action !== "#") window.location.href = action; else toast.info("Schedule view coming soon"); }}
+                    className="flex flex-col items-center gap-2.5 rounded-xl border border-border bg-muted/30 hover:bg-muted hover:border-primary/30 transition-all p-4 text-center group"
+                  >
+                    <div className={cn("flex h-10 w-10 items-center justify-center rounded-xl transition-transform group-hover:scale-110", bg)}>
+                      <Icon className={cn("h-5 w-5", color)} />
+                    </div>
+                    <span className="text-xs font-semibold text-foreground leading-tight">{label}</span>
+                  </button>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Role & Permissions */}
+          <Card>
+            <CardHeader className="pb-4">
+              <CardTitle className="text-base flex items-center gap-2">
+                <Shield className="h-4 w-4 text-primary" /> Role & Permissions
+              </CardTitle>
+              <CardDescription>Your current role and access levels</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center gap-3 rounded-xl border border-border bg-muted/30 p-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                  <Briefcase className="h-5 w-5 text-primary" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-foreground text-sm capitalize">{profile?.role ?? "staff"}</p>
+                  <p className="text-xs text-muted-foreground">Active account</p>
+                </div>
+                <Badge variant="outline" className="text-[10px] bg-emerald-50 text-emerald-700 border-emerald-200 shrink-0">
+                  Active
+                </Badge>
+              </div>
+              <div className="space-y-3">
+                {[
+                  { module: "Orders",       can: ["View", "Process", "Update Status"],            cannot: ["Delete"] },
+                  { module: "Products",     can: ["View", "Edit Stock"],                           cannot: ["Create", "Delete"] },
+                  { module: "Customers",    can: ["View", "View Details"],                         cannot: ["Edit", "Delete"] },
+                  { module: "Inventory",    can: ["View", "Update Quantity"],                      cannot: ["Bulk Delete"] },
+                  { module: "Analytics",    can: ["View Reports"],                                 cannot: ["Export", "Admin Reports"] },
+                  { module: "Settings",     can: ["Personal Profile", "Notifications"],            cannot: ["Store Settings", "User Management"] },
+                ].map(({ module, can, cannot }) => (
+                  <div key={module} className="rounded-lg border border-border p-3">
+                    <p className="text-xs font-bold text-foreground mb-2">{module}</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {can.map((p) => (
+                        <span key={p} className="inline-flex items-center gap-0.5 text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-900/20">
+                          <CheckCircle2 className="h-2.5 w-2.5" />{p}
+                        </span>
+                      ))}
+                      {cannot.map((p) => (
+                        <span key={p} className="inline-flex items-center gap-0.5 text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground/60 line-through">
+                          {p}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Monthly performance */}
+          <Card>
+            <CardHeader className="pb-4">
+              <CardTitle className="text-base flex items-center gap-2">
+                <TrendingUp className="h-4 w-4 text-primary" /> Monthly Performance
+              </CardTitle>
+              <CardDescription>Your KPIs for May 2025</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {[
+                { label: "Orders Processed",  current: 142, target: 160, unit: "" },
+                { label: "Customer Satisfaction", current: 94, target: 100, unit: "%" },
+                { label: "On-time Packing",   current: 87, target: 95, unit: "%" },
+                { label: "Avg. Processing Time", current: 12, target: 15, unit: "min", invert: true },
+              ].map(({ label, current, target, unit, invert }) => {
+                const pct = Math.min((current / target) * 100, 100);
+                const good = invert ? current <= target : current >= target * 0.9;
+                return (
+                  <div key={label} className="space-y-1.5">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="font-medium text-foreground">{label}</span>
+                      <span className={cn("text-xs font-bold", good ? "text-emerald-500" : "text-amber-500")}>
+                        {current}{unit} / {target}{unit}
+                      </span>
+                    </div>
+                    <Progress value={pct} className="h-2" />
+                  </div>
+                );
+              })}
+            </CardContent>
+          </Card>
+
+        </TabsContent>
 
         {/* Profile Tab */}
         <TabsContent value="profile" className="space-y-4 mt-0">

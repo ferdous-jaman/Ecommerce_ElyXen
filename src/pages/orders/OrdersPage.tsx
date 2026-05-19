@@ -139,7 +139,7 @@ export function OrdersPage() {
                   const fullName = customer ? `${customer.first_name} ${customer.last_name}` : "Unknown";
                   return (
                     <TableRow key={order.id} className="cursor-pointer hover:bg-muted/40"
-                      onClick={() => navigate(`/orders/${order.id}`)}>
+                      onClick={() => navigate(`/dashboard/orders/${order.id}`)}>
                       <TableCell>
                         <span className="font-mono text-sm font-medium text-primary">{order.order_number}</span>
                       </TableCell>

@@ -66,7 +66,7 @@ export function DashboardPage() {
   const stats = [
     {
       title: "Total Revenue",
-      value: formatCurrency(104200),
+      value: formatCurrency(324200),
       change: 18.2,
       sub: "vs last month",
       icon: DollarSign,
@@ -96,7 +96,7 @@ export function DashboardPage() {
     },
     {
       title: "Avg. Order Value",
-      value: formatCurrency(128),
+      value: formatCurrency(3840),
       change: -2.4,
       sub: "vs last month",
       icon: TrendingUp,
@@ -188,7 +188,7 @@ export function DashboardPage() {
                   tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
                 <YAxis axisLine={false} tickLine={false} width={46}
                   tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
-                  tickFormatter={(v: number) => `$${(v / 1000).toFixed(0)}k`} />
+                  tickFormatter={(v: number) => `৳${(v / 1000).toFixed(0)}k`} />
                 <Tooltip content={<RevenueTooltip />} />
                 <Area type="monotone" dataKey="revenue" name="revenue"
                   stroke="hsl(var(--primary))" strokeWidth={2} fill="url(#revGrad)" dot={false}
