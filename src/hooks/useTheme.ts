@@ -1,9 +1,9 @@
 import { useEffect } from "react";
-import { useThemeStore } from "@/store/useThemeStore";
+import { useThemeStore, ACCENT_THEMES } from "@/store/useThemeStore";
 import type { Theme } from "@/types";
 
 export function useTheme() {
-  const { theme, setTheme } = useThemeStore();
+  const { theme, setTheme, accentTheme, setAccentTheme } = useThemeStore();
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -20,6 +20,15 @@ export function useTheme() {
     }
   }, [theme]);
 
+  useEffect(() => {
+    const root = window.document.documentElement;
+    const config = ACCENT_THEMES[accentTheme];
+    if (config) {
+      root.style.setProperty("--primary", config.primary);
+      root.style.setProperty("--ring", config.primary);
+    }
+  }, [accentTheme]);
+
   const resolvedTheme: "light" | "dark" =
     theme === "system"
       ? window.matchMedia("(prefers-color-scheme: dark)").matches
@@ -27,7 +36,7 @@ export function useTheme() {
         : "light"
       : theme;
 
-  return { theme, setTheme, resolvedTheme };
+  return { theme, setTheme, resolvedTheme, accentTheme, setAccentTheme };
 }
 
 export type { Theme };

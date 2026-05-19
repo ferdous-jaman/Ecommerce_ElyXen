@@ -16,7 +16,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ThemeToggle } from "@/components/shared/ThemeToggle";
+import { useTheme } from "@/hooks/useTheme";
+import { ACCENT_THEMES, type AccentTheme } from "@/store/useThemeStore";
 import { useAuth } from "@/contexts/AuthContext";
 import { getInitials } from "@/lib/utils";
 import { cn } from "@/lib/utils";
@@ -37,6 +38,7 @@ export function SettingsPage() {
   const displayName = profile?.full_name ?? user?.email?.split("@")[0] ?? "User";
   const isAdmin = profile?.role === "admin";
   const isStaff = profile?.role === "staff";
+  const { theme, setTheme, resolvedTheme, accentTheme, setAccentTheme } = useTheme();
   const [showOldPw, setShowOldPw] = useState(false);
   const [showNewPw, setShowNewPw] = useState(false);
   const [notifs, setNotifs] = useState<Record<NotifKey, boolean>>(defaultNotifs);
@@ -427,20 +429,98 @@ export function SettingsPage() {
 
         {/* Appearance Tab */}
         <TabsContent value="appearance" className="space-y-4 mt-0">
+
+          {/* Mode selector */}
           <Card>
             <CardHeader className="pb-4">
-              <CardTitle className="text-base">Theme</CardTitle>
-              <CardDescription>Choose how ElyXen looks on your device.</CardDescription>
+              <CardTitle className="text-base">Display Mode</CardTitle>
+              <CardDescription>Choose how ElyXen looks — affects the entire site.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-3 gap-3">
+                {([
+                  { value: "light",  label: "Light",  icon: "☀️",  desc: "Clean white UI" },
+                  { value: "dark",   label: "Dark",   icon: "🌙",  desc: "Easy on the eyes" },
+                  { value: "system", label: "System", icon: "💻",  desc: "Follow OS setting" },
+                ] as const).map((m) => (
+                  <button
+                    key={m.value}
+                    onClick={() => setTheme(m.value)}
+                    className={cn(
+                      "relative flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition-all hover:bg-muted/50",
+                      theme === m.value
+                        ? "border-primary bg-primary/5 shadow-sm"
+                        : "border-border bg-muted/20"
+                    )}
+                  >
+                    {theme === m.value && (
+                      <span className="absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded-full bg-primary">
+                        <Check className="h-2.5 w-2.5 text-primary-foreground" />
+                      </span>
+                    )}
+                    <span className="text-2xl">{m.icon}</span>
+                    <span className="text-sm font-semibold text-foreground">{m.label}</span>
+                    <span className="text-[10px] text-muted-foreground text-center">{m.desc}</span>
+                  </button>
+                ))}
+              </div>
+              <p className="mt-3 text-[11px] text-muted-foreground">
+                Current: <span className="font-semibold text-foreground capitalize">{resolvedTheme}</span> mode
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Accent / Color Theme */}
+          <Card>
+            <CardHeader className="pb-4">
+              <CardTitle className="text-base">Color Theme</CardTitle>
+              <CardDescription>Pick an accent color for buttons, badges, links, and highlights — applied site-wide.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3">
+                {(Object.entries(ACCENT_THEMES) as [AccentTheme, typeof ACCENT_THEMES[AccentTheme]][]).map(([key, cfg]) => (
+                  <button
+                    key={key}
+                    onClick={() => { setAccentTheme(key); toast.success(`Theme changed to ${cfg.label}`); }}
+                    className={cn(
+                      "relative flex flex-col gap-2.5 rounded-xl border-2 p-3.5 text-left transition-all hover:bg-muted/40",
+                      accentTheme === key
+                        ? "border-primary shadow-sm"
+                        : "border-border bg-muted/10"
+                    )}
+                  >
+                    {accentTheme === key && (
+                      <span className="absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded-full bg-primary">
+                        <Check className="h-2.5 w-2.5 text-primary-foreground" />
+                      </span>
+                    )}
+                    {/* Color swatches */}
+                    <div className="flex items-center gap-1.5">
+                      {cfg.preview.map((c) => (
+                        <span
+                          key={c}
+                          className="inline-block h-5 rounded-full"
+                          style={{ width: 20, backgroundColor: c }}
+                        />
+                      ))}
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-foreground leading-tight">{cfg.label}</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5 leading-tight">{cfg.description}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Misc */}
+          <Card>
+            <CardHeader className="pb-4">
+              <CardTitle className="text-base">Interface</CardTitle>
+              <CardDescription>Fine-tune layout and motion preferences.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium">Color theme</p>
-                  <p className="text-xs text-muted-foreground">Light, dark, or follow system preference.</p>
-                </div>
-                <ThemeToggle />
-              </div>
-              <Separator />
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium">Compact mode</p>
@@ -448,6 +528,7 @@ export function SettingsPage() {
                 </div>
                 <Switch />
               </div>
+              <Separator />
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium">Animations</p>

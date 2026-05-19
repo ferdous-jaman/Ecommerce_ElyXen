@@ -6,6 +6,7 @@ import {
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -16,6 +17,7 @@ import {
 import { OrderStatusBadge, PaymentStatusBadge } from "@/components/shared/StatusBadge";
 import { TableRowSkeleton } from "@/components/shared/Skeleton";
 import { useOrders } from "@/hooks/useOrders";
+import { recentOrders } from "@/lib/mockData";
 import { formatCurrency, formatDate, getInitials } from "@/lib/utils";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
@@ -33,7 +35,20 @@ export function OrdersPage() {
   const navigate = useNavigate();
   const { orders, total, page, pageSize, filters, isLoading, setPage, setFilters } = useOrders();
   const [searchInput, setSearchInput] = useState(filters.search ?? "");
-  const totalPages = Math.ceil(total / pageSize);
+
+  // If DB has no orders, fall back to mock demo data
+  const usingMock = !isLoading && orders.length === 0;
+  const filteredMock = usingMock
+    ? recentOrders.filter((o) => {
+        const matchSearch = !filters.search ||
+          o.orderNumber.toLowerCase().includes(filters.search.toLowerCase()) ||
+          o.customer.name.toLowerCase().includes(filters.search.toLowerCase());
+        const matchStatus = !filters.status || filters.status === "all" || o.status === filters.status;
+        return matchSearch && matchStatus;
+      })
+    : [];
+  const displayTotal = usingMock ? filteredMock.length : total;
+  const totalPages = usingMock ? 1 : Math.ceil(total / pageSize);
 
   function handleSearchSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -49,7 +64,7 @@ export function OrdersPage() {
     <div className="space-y-6">
       <PageHeader
         title="Orders"
-        description={`${total} order${total !== 1 ? "s" : ""}`}
+        description={`${displayTotal} order${displayTotal !== 1 ? "s" : ""}`}
       />
 
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
@@ -119,20 +134,46 @@ export function OrdersPage() {
             <TableBody>
               {isLoading ? (
                 Array.from({ length: 8 }).map((_, i) => <TableRowSkeleton key={i} cols={6} />)
-              ) : orders.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={6}>
-                    <div className="flex flex-col items-center justify-center py-16 gap-3">
-                      <div className="rounded-xl bg-muted p-4"><ShoppingCart className="h-7 w-7 text-muted-foreground" /></div>
-                      <div className="text-center">
-                        <p className="text-sm font-medium">No orders found</p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {hasActiveFilters ? "Try adjusting your filters" : "Orders will appear here once placed"}
-                        </p>
+              ) : usingMock ? (
+                filteredMock.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={6}>
+                      <div className="flex flex-col items-center justify-center py-16 gap-3">
+                        <div className="rounded-xl bg-muted p-4"><ShoppingCart className="h-7 w-7 text-muted-foreground" /></div>
+                        <p className="text-sm text-muted-foreground">No orders match your filters</p>
                       </div>
-                    </div>
-                  </TableCell>
-                </TableRow>
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  filteredMock.map((order) => (
+                    <TableRow key={order.id} className="cursor-pointer hover:bg-muted/40">
+                      <TableCell>
+                        <span className="font-mono text-sm font-medium text-primary">{order.orderNumber}</span>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Avatar className="h-7 w-7 shrink-0">
+                            <AvatarFallback className="bg-primary/10 text-primary text-[10px] font-semibold">
+                              {getInitials(order.customer.name)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="min-w-0">
+                            <p className="text-sm font-medium truncate">{order.customer.name}</p>
+                            <p className="text-[11px] text-muted-foreground truncate">{order.customer.email}</p>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell><OrderStatusBadge status={order.status} /></TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="text-[10px] bg-emerald-50 text-emerald-700 border-emerald-200">
+                          {order.status === "cancelled" ? "Cancelled" : "COD"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{formatDate(order.createdAt)}</TableCell>
+                      <TableCell className="text-right font-semibold">{formatCurrency(order.total)}</TableCell>
+                    </TableRow>
+                  ))
+                )
               ) : (
                 (orders as OrderWithCustomer[]).map((order) => {
                   const customer = order.customers;
