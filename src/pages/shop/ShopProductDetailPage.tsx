@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
-  ArrowLeft, Package, Tag, ShoppingCart, Zap, CheckCircle2, AlertTriangle,
+  ArrowLeft, Package, Tag, ShoppingCart, Zap, CheckCircle2, AlertTriangle, Heart,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,7 @@ import { supabase } from "@/lib/supabase";
 import { formatCurrency } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCartStore } from "@/store/useCartStore";
+import { useWishlistStore } from "@/store/useWishlistStore";
 import { toast } from "sonner";
 import type { Product } from "@/types/database";
 
@@ -24,6 +25,7 @@ export function ShopProductDetailPage() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { addItem, openCart } = useCartStore();
+  const { toggleItem, hasItem } = useWishlistStore();
   const [product, setProduct] = useState<ProductWithInventory | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -185,7 +187,18 @@ export function ShopProductDetailPage() {
 
           {/* CTA */}
           <div className="space-y-3">
-            <div className="flex gap-3">
+            <div className="flex gap-3 items-center">
+              <button
+                onClick={() => { toggleItem(product as Product); toast.success(hasItem(product.id) ? "Removed from wishlist" : "Added to wishlist!"); }}
+                className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border-2 transition-colors ${
+                  hasItem(product.id)
+                    ? "border-rose-500 bg-rose-50 text-rose-500 dark:bg-rose-900/20"
+                    : "border-border hover:border-rose-400 hover:text-rose-500"
+                }`}
+                aria-label="Toggle wishlist"
+              >
+                <Heart className={`h-5 w-5 ${hasItem(product.id) ? "fill-current" : ""}`} />
+              </button>
               <Button
                 variant="outline"
                 className="flex-1 gap-2"

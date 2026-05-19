@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ShoppingCart, Zap, Package, ArrowRight } from "lucide-react";
+import { ShoppingCart, Zap, Package, ArrowRight, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/shared/Skeleton";
 import { supabase } from "@/lib/supabase";
 import { formatCurrency } from "@/lib/utils";
 import { useCartStore } from "@/store/useCartStore";
+import { useWishlistStore } from "@/store/useWishlistStore";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import type { Product } from "@/types/database";
@@ -15,7 +16,9 @@ import type { Product } from "@/types/database";
 function ProductCard({ product }: { product: Product }) {
   const navigate = useNavigate();
   const { addItem, openCart } = useCartStore();
+  const { toggleItem, hasItem } = useWishlistStore();
   const { isAuthenticated } = useAuth();
+  const wished = hasItem(product.id);
 
   const discount =
     product.compare_price && product.compare_price > product.price
@@ -63,6 +66,14 @@ function ProductCard({ product }: { product: Product }) {
             -{discount}%
           </Badge>
         )}
+        <button
+          onClick={(e) => { e.stopPropagation(); toggleItem(product); toast.success(wished ? "Removed from wishlist" : "Added to wishlist!"); }}
+          className={`absolute top-2 right-2 flex h-7 w-7 items-center justify-center rounded-full shadow transition-colors ${
+            wished ? "bg-rose-500 text-white" : "bg-background/90 text-muted-foreground hover:text-rose-500"
+          }`}
+        >
+          <Heart className={`h-3.5 w-3.5 ${wished ? "fill-current" : ""}`} />
+        </button>
       </div>
 
       <CardContent className="p-3 space-y-2">
