@@ -109,6 +109,21 @@ function ProductCardSkeleton() {
   );
 }
 
+const CATEGORY_META: Record<string, { emoji: string; img: string }> = {
+  electronics:  { emoji: "💻", img: "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=48&h=48&fit=crop&auto=format" },
+  fashion:      { emoji: "👗", img: "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=48&h=48&fit=crop&auto=format" },
+  "home-living":{ emoji: "🏠", img: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=48&h=48&fit=crop&auto=format" },
+  sports:       { emoji: "⚽", img: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=48&h=48&fit=crop&auto=format" },
+  beauty:       { emoji: "💄", img: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=48&h=48&fit=crop&auto=format" },
+  books:        { emoji: "📚", img: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=48&h=48&fit=crop&auto=format" },
+  toys:         { emoji: "🧸", img: "https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=48&h=48&fit=crop&auto=format" },
+  food:         { emoji: "🍔", img: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=48&h=48&fit=crop&auto=format" },
+  health:       { emoji: "💊", img: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=48&h=48&fit=crop&auto=format" },
+  automotive:   { emoji: "🚗", img: "https://images.unsplash.com/photo-1493238792000-8113da705763?w=48&h=48&fit=crop&auto=format" },
+  jewelry:      { emoji: "💍", img: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=48&h=48&fit=crop&auto=format" },
+  pets:         { emoji: "🐾", img: "https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=48&h=48&fit=crop&auto=format" },
+};
+
 export function ShopPage() {
   const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
@@ -189,16 +204,37 @@ export function ShopPage() {
               All Products
               <ChevronRight className="h-3.5 w-3.5 opacity-50" />
             </button>
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setCategory(cat.slug)}
-                className={`flex items-center justify-between w-full px-3 py-2 rounded-lg text-sm font-medium transition-colors ${categorySlug === cat.slug ? "bg-primary text-primary-foreground" : "hover:bg-muted text-foreground"}`}
-              >
-                {cat.name}
-                <ChevronRight className="h-3.5 w-3.5 opacity-50" />
-              </button>
-            ))}
+            {categories.map((cat) => {
+              const meta = CATEGORY_META[cat.slug];
+              const isActive = categorySlug === cat.slug;
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => setCategory(cat.slug)}
+                  className={`flex items-center gap-2.5 w-full px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive ? "bg-primary text-primary-foreground" : "hover:bg-muted text-foreground"}`}
+                >
+                  {meta ? (
+                    <img
+                      src={meta.img}
+                      alt={cat.name}
+                      className={`h-6 w-6 rounded-md object-cover shrink-0 ${isActive ? "ring-1 ring-primary-foreground/40" : ""}`}
+                      onError={(e) => {
+                        const t = e.target as HTMLImageElement;
+                        t.style.display = "none";
+                        const span = document.createElement("span");
+                        span.textContent = meta.emoji;
+                        span.className = "text-base";
+                        t.parentNode?.insertBefore(span, t);
+                      }}
+                    />
+                  ) : (
+                    <span className="h-6 w-6 flex items-center justify-center text-sm shrink-0">🏷️</span>
+                  )}
+                  <span className="flex-1 text-left truncate">{cat.name}</span>
+                  <ChevronRight className="h-3.5 w-3.5 opacity-50 shrink-0" />
+                </button>
+              );
+            })}
           </div>
         </aside>
 

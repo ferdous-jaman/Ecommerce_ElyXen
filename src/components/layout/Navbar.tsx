@@ -1,4 +1,8 @@
-import { Bell, Search, Menu, LogOut, User, Settings, Command } from "lucide-react";
+import {
+  Bell, Search, Menu, LogOut, User, Settings, Command,
+  Users, BarChart3, ShieldAlert, DollarSign, Store,
+  Briefcase, ClipboardList, LayoutDashboard,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -12,6 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuGroup,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { getInitials, cn } from "@/lib/utils";
@@ -21,6 +26,12 @@ const ROLE_LABELS: Record<string, string> = {
   admin: "Admin",
   staff: "Staff",
   customer: "Customer",
+};
+
+const ROLE_COLORS: Record<string, string> = {
+  admin: "bg-primary/10 text-primary",
+  staff: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+  customer: "bg-muted text-muted-foreground",
 };
 
 export function Navbar() {
@@ -33,6 +44,8 @@ export function Navbar() {
   const displayEmail = user?.email ?? "";
   const displayRole = profile?.role ? ROLE_LABELS[profile.role] : "";
   const avatarUrl = profile?.avatar_url ?? "";
+  const isAdmin = profile?.role === "admin";
+  const isStaff = profile?.role === "staff";
 
   async function handleLogout() {
     await logout();
@@ -92,7 +105,7 @@ export function Navbar() {
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
-              className="relative h-8 w-8 rounded-full p-0"
+              className="relative h-8 w-8 rounded-full p-0 ring-2 ring-transparent hover:ring-primary/30 transition-all"
               aria-label="User menu"
             >
               <Avatar className="h-8 w-8">
@@ -103,12 +116,13 @@ export function Navbar() {
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-60" align="end" forceMount>
-            <DropdownMenuLabel className="font-normal">
+          <DropdownMenuContent className="w-64" align="end" forceMount>
+            {/* User info header */}
+            <DropdownMenuLabel className="font-normal pb-2">
               <div className="flex items-center gap-3">
-                <Avatar className="h-9 w-9">
+                <Avatar className="h-10 w-10 ring-2 ring-primary/20">
                   <AvatarImage src={avatarUrl} alt={displayName} />
-                  <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
+                  <AvatarFallback className="bg-primary/10 text-primary text-sm font-semibold">
                     {getInitials(displayName)}
                   </AvatarFallback>
                 </Avatar>
@@ -116,14 +130,7 @@ export function Navbar() {
                   <p className="text-sm font-semibold leading-none truncate">{displayName}</p>
                   <p className="text-xs leading-none text-muted-foreground truncate">{displayEmail}</p>
                   {displayRole && (
-                    <span
-                      className={cn(
-                        "mt-1 inline-flex w-fit items-center rounded-full px-2 py-0.5 text-[10px] font-medium",
-                        profile?.role === "admin"
-                          ? "bg-primary/10 text-primary"
-                          : "bg-muted text-muted-foreground"
-                      )}
-                    >
+                    <span className={cn("mt-1.5 inline-flex w-fit items-center rounded-full px-2 py-0.5 text-[10px] font-semibold", ROLE_COLORS[profile?.role ?? "staff"])}>
                       {displayRole}
                     </span>
                   )}
@@ -131,27 +138,67 @@ export function Navbar() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="gap-2 cursor-pointer"
-              onClick={() => navigate("/dashboard/settings")}
-            >
-              <User className="h-3.5 w-3.5" />
-              Profile
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className="gap-2 cursor-pointer"
-              onClick={() => navigate("/dashboard/settings")}
-            >
-              <Settings className="h-3.5 w-3.5" />
-              Settings
-            </DropdownMenuItem>
+
+            {/* Common — My Account */}
+            <DropdownMenuGroup>
+              <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => navigate("/dashboard/settings?tab=profile")}>
+                <User className="h-3.5 w-3.5 text-muted-foreground" /> My Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => navigate("/dashboard/settings")}>
+                <Settings className="h-3.5 w-3.5 text-muted-foreground" /> Settings
+              </DropdownMenuItem>
+              <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => navigate("/dashboard")}>
+                <LayoutDashboard className="h-3.5 w-3.5 text-muted-foreground" /> Dashboard
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+
+            {/* Staff-specific */}
+            {isStaff && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground px-2 py-1">My Work</DropdownMenuLabel>
+                  <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => navigate("/dashboard/settings?tab=staff")}>
+                    <Briefcase className="h-3.5 w-3.5 text-muted-foreground" /> Shift & Schedule
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => navigate("/dashboard/orders")}>
+                    <ClipboardList className="h-3.5 w-3.5 text-muted-foreground" /> My Orders Queue
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+              </>
+            )}
+
+            {/* Admin-specific */}
+            {isAdmin && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground px-2 py-1">Admin Controls</DropdownMenuLabel>
+                  <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => navigate("/dashboard/staff")}>
+                    <Users className="h-3.5 w-3.5 text-muted-foreground" /> Staff Management
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => navigate("/dashboard/salary")}>
+                    <DollarSign className="h-3.5 w-3.5 text-muted-foreground" /> Payroll & Salary
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => navigate("/dashboard/analytics")}>
+                    <BarChart3 className="h-3.5 w-3.5 text-muted-foreground" /> Revenue Reports
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => navigate("/dashboard/fraud-check")}>
+                    <ShieldAlert className="h-3.5 w-3.5 text-muted-foreground" /> Fraud Check
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => navigate("/dashboard/settings?tab=store")}>
+                    <Store className="h-3.5 w-3.5 text-muted-foreground" /> Store Settings
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+              </>
+            )}
+
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="gap-2 cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10"
               onClick={handleLogout}
             >
-              <LogOut className="h-3.5 w-3.5" />
-              Sign out
+              <LogOut className="h-3.5 w-3.5" /> Sign out
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import {
   User, Bell, Shield, Palette, Globe, Camera, Eye, EyeOff, Check,
@@ -35,6 +36,7 @@ const defaultNotifs: Record<NotifKey, boolean> = {
 
 export function SettingsPage() {
   const { user, profile } = useAuth();
+  const [searchParams] = useSearchParams();
   const displayName = profile?.full_name ?? user?.email?.split("@")[0] ?? "User";
   const isAdmin = profile?.role === "admin";
   const isStaff = profile?.role === "staff";
@@ -43,6 +45,9 @@ export function SettingsPage() {
   const [showNewPw, setShowNewPw] = useState(false);
   const [notifs, setNotifs] = useState<Record<NotifKey, boolean>>(defaultNotifs);
   const [saved, setSaved] = useState(false);
+
+  const tabParam = searchParams.get("tab");
+  const defaultTab = tabParam ?? (isStaff ? "staff" : "profile");
 
   function handleSave() {
     toast.success("Changes saved successfully");
@@ -70,7 +75,7 @@ export function SettingsPage() {
         description="Manage your account and application preferences."
       />
 
-      <Tabs defaultValue={isStaff ? "staff" : "profile"} className="space-y-6">
+      <Tabs defaultValue={defaultTab} className="space-y-6">
         <TabsList className="h-9 w-full sm:w-auto gap-0.5 flex-wrap">
           {isStaff && (
             <TabsTrigger value="staff" className="gap-1.5 text-xs">

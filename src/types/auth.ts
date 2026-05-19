@@ -46,7 +46,8 @@ export type Permission =
   | "settings:read"
   | "settings:write"
   | "users:read"
-  | "users:write";
+  | "users:write"
+  | "admin:read";
 
 export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
   admin: [

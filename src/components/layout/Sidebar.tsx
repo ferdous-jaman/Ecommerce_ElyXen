@@ -1,19 +1,10 @@
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
-  LayoutDashboard,
-  Package,
-  ShoppingCart,
-  Users,
-  BarChart3,
-  Settings,
-  Warehouse,
-  ChevronLeft,
-  ChevronRight,
-  Zap,
-  FolderOpen,
-  Images,
-  ShieldAlert,
+  LayoutDashboard, Package, ShoppingCart, Users, BarChart3, Settings,
+  Warehouse, ChevronLeft, ChevronRight, Zap, FolderOpen, Images, ShieldAlert,
+  LogOut, User, DollarSign, Store, Briefcase, ClipboardList,
 } from "lucide-react";
+import { toast } from "sonner";
 import { cn, getInitials } from "@/lib/utils";
 import { useSidebarStore } from "@/store/useSidebarStore";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -21,6 +12,11 @@ import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
+  DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuGroup,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/contexts/AuthContext";
 import type { NavItem } from "@/types";
 
@@ -107,11 +103,20 @@ function SidebarNavItem({ item, isCollapsed }: SidebarNavItemProps) {
 
 export function Sidebar() {
   const { isCollapsed, toggleCollapse } = useSidebarStore();
-  const { user, profile } = useAuth();
+  const { user, profile, logout } = useAuth();
+  const navigate = useNavigate();
 
   const displayName = profile?.full_name ?? user?.email?.split("@")[0] ?? "User";
   const displayRole = profile?.role ?? "staff";
   const avatarUrl = profile?.avatar_url ?? "";
+  const isAdmin = profile?.role === "admin";
+  const isStaff = profile?.role === "staff";
+
+  async function handleLogout() {
+    await logout();
+    toast.success("Signed out successfully.");
+    navigate("/login");
+  }
 
   return (
     <TooltipProvider>
@@ -161,6 +166,23 @@ export function Sidebar() {
             ))}
           </nav>
 
+          {isAdmin && (
+            <>
+              <Separator className="my-3 bg-sidebar-border" />
+              {!isCollapsed && (
+                <p className="px-4 mb-1 text-[9px] font-bold uppercase tracking-widest text-muted-foreground/60">Admin</p>
+              )}
+              <nav className={cn("flex flex-col gap-0.5 px-2")}>
+                {[
+                  { label: "Staff Mgmt",  href: "/dashboard/staff",   icon: Users },
+                  { label: "Payroll",     href: "/dashboard/salary",  icon: DollarSign },
+                ].map((item) => (
+                  <SidebarNavItem key={item.href} item={item} isCollapsed={isCollapsed} />
+                ))}
+              </nav>
+            </>
+          )}
+
           <Separator className="my-3 bg-sidebar-border" />
 
           <nav className={cn("flex flex-col gap-0.5 px-2")}>
@@ -175,42 +197,101 @@ export function Sidebar() {
         </ScrollArea>
 
         <div className="border-t border-sidebar-border">
-          {!isCollapsed && (
-            <div className="flex items-center gap-2.5 px-3 py-3">
-              <Avatar className="h-7 w-7 shrink-0">
-                <AvatarImage src={avatarUrl} alt={displayName} />
-                <AvatarFallback className="bg-primary/10 text-primary text-[10px] font-semibold">
-                  {getInitials(displayName)}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex min-w-0 flex-col">
-                <span className="truncate text-xs font-medium text-sidebar-foreground">
-                  {displayName}
-                </span>
-                <span className="truncate text-[10px] capitalize text-muted-foreground">
-                  {displayRole}
-                </span>
-              </div>
-            </div>
-          )}
-          {isCollapsed && (
-            <div className="flex justify-center py-2">
-              <Tooltip delayDuration={0}>
-                <TooltipTrigger asChild>
-                  <Avatar className="h-7 w-7 cursor-default">
+          {/* Avatar dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              {!isCollapsed ? (
+                <button className="flex w-full items-center gap-2.5 px-3 py-3 hover:bg-sidebar-accent rounded-none transition-colors text-left">
+                  <Avatar className="h-7 w-7 shrink-0 ring-2 ring-primary/20">
                     <AvatarImage src={avatarUrl} alt={displayName} />
                     <AvatarFallback className="bg-primary/10 text-primary text-[10px] font-semibold">
                       {getInitials(displayName)}
                     </AvatarFallback>
                   </Avatar>
-                </TooltipTrigger>
-                <TooltipContent side="right">
-                  <p className="font-medium">{displayName}</p>
-                  <p className="text-xs capitalize text-muted-foreground">{displayRole}</p>
-                </TooltipContent>
-              </Tooltip>
-            </div>
-          )}
+                  <div className="flex min-w-0 flex-col">
+                    <span className="truncate text-xs font-semibold text-sidebar-foreground">{displayName}</span>
+                    <span className="truncate text-[10px] capitalize text-muted-foreground">{displayRole}</span>
+                  </div>
+                </button>
+              ) : (
+                <div className="flex justify-center py-2">
+                  <Tooltip delayDuration={0}>
+                    <TooltipTrigger asChild>
+                      <button className="rounded-full hover:ring-2 hover:ring-primary/30 transition-all">
+                        <Avatar className="h-7 w-7">
+                          <AvatarImage src={avatarUrl} alt={displayName} />
+                          <AvatarFallback className="bg-primary/10 text-primary text-[10px] font-semibold">
+                            {getInitials(displayName)}
+                          </AvatarFallback>
+                        </Avatar>
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">
+                      <p className="font-medium">{displayName}</p>
+                      <p className="text-xs capitalize text-muted-foreground">{displayRole}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+              )}
+            </DropdownMenuTrigger>
+            <DropdownMenuContent side="right" align="end" className="w-56 mb-1">
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex items-center gap-2">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={avatarUrl} alt={displayName} />
+                    <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">{getInitials(displayName)}</AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold truncate">{displayName}</p>
+                    <p className="text-[10px] text-muted-foreground capitalize">{displayRole}</p>
+                  </div>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                <DropdownMenuItem className="gap-2 cursor-pointer text-xs" onClick={() => navigate("/dashboard/settings?tab=profile")}>
+                  <User className="h-3.5 w-3.5 text-muted-foreground" /> My Profile
+                </DropdownMenuItem>
+                <DropdownMenuItem className="gap-2 cursor-pointer text-xs" onClick={() => navigate("/dashboard/settings")}>
+                  <Settings className="h-3.5 w-3.5 text-muted-foreground" /> Settings
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+              {isStaff && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem className="gap-2 cursor-pointer text-xs" onClick={() => navigate("/dashboard/settings?tab=staff")}>
+                      <Briefcase className="h-3.5 w-3.5 text-muted-foreground" /> My Shift
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="gap-2 cursor-pointer text-xs" onClick={() => navigate("/dashboard/orders")}>
+                      <ClipboardList className="h-3.5 w-3.5 text-muted-foreground" /> Orders Queue
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                </>
+              )}
+              {isAdmin && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem className="gap-2 cursor-pointer text-xs" onClick={() => navigate("/dashboard/staff")}>
+                      <Users className="h-3.5 w-3.5 text-muted-foreground" /> Staff Management
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="gap-2 cursor-pointer text-xs" onClick={() => navigate("/dashboard/salary")}>
+                      <DollarSign className="h-3.5 w-3.5 text-muted-foreground" /> Payroll
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="gap-2 cursor-pointer text-xs" onClick={() => navigate("/dashboard/settings?tab=store")}>
+                      <Store className="h-3.5 w-3.5 text-muted-foreground" /> Store Settings
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                </>
+              )}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="gap-2 cursor-pointer text-xs text-destructive focus:text-destructive focus:bg-destructive/10" onClick={handleLogout}>
+                <LogOut className="h-3.5 w-3.5" /> Sign out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           <div className="border-t border-sidebar-border p-2">
             <Button
               variant="ghost"

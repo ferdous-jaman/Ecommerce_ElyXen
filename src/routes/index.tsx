@@ -38,7 +38,9 @@ const CustomersPage     = lazy(() => import("@/pages/customers/CustomersPage").t
 const CustomerDetailPage = lazy(() => import("@/pages/customers/CustomerDetailPage").then((m) => ({ default: m.CustomerDetailPage })));
 const InventoryPage     = lazy(() => import("@/pages/inventory/InventoryPage").then((m) => ({ default: m.InventoryPage })));
 const BannerManagerPage  = lazy(() => import("@/pages/banners/BannerManagerPage").then((m) => ({ default: m.BannerManagerPage })));
-const FraudCheckPage     = lazy(() => import("@/pages/fraud/FraudCheckPage").then((m) => ({ default: m.FraudCheckPage })));
+const FraudCheckPage        = lazy(() => import("@/pages/fraud/FraudCheckPage").then((m) => ({ default: m.FraudCheckPage })));
+const StaffManagementPage   = lazy(() => import("@/pages/admin/StaffManagementPage").then((m) => ({ default: m.StaffManagementPage })));
+const SalaryPage            = lazy(() => import("@/pages/admin/SalaryPage").then((m) => ({ default: m.SalaryPage })));
 
 function SuspenseRoute({ children }: { children: React.ReactNode }) {
   return (
@@ -145,6 +147,14 @@ export const router = createBrowserRouter([
       {
         path: "fraud-check",
         element: <SuspenseRoute><ProtectedRoute requiredPermission="orders:read"><FraudCheckPage /></ProtectedRoute></SuspenseRoute>,
+      },
+      {
+        path: "staff",
+        element: <SuspenseRoute><ProtectedRoute requiredRole="admin"><StaffManagementPage /></ProtectedRoute></SuspenseRoute>,
+      },
+      {
+        path: "salary",
+        element: <SuspenseRoute><ProtectedRoute requiredRole="admin"><SalaryPage /></ProtectedRoute></SuspenseRoute>,
       },
       {
         path: "settings",
