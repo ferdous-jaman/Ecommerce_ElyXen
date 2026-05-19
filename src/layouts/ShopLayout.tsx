@@ -1,13 +1,17 @@
 import { Outlet, Link, useNavigate } from "react-router-dom";
-import { LayoutDashboard, LogIn, UserPlus, Zap, Menu, X } from "lucide-react";
+import { LayoutDashboard, LogIn, UserPlus, Zap, Menu, X, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCartStore } from "@/store/useCartStore";
+import { CartDrawer } from "@/components/shop/CartDrawer";
 import { useState } from "react";
 
 export function ShopLayout() {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { totalItems, toggleCart } = useCartStore();
+  const cartCount = totalItems();
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -36,7 +40,7 @@ export function ShopLayout() {
             {/* Desktop Actions */}
             <div className="hidden md:flex items-center gap-3">
               {isAuthenticated ? (
-                <Button size="sm" onClick={() => navigate("/")} className="gap-2">
+                <Button size="sm" variant="outline" onClick={() => navigate("/dashboard")} className="gap-2">
                   <LayoutDashboard className="h-4 w-4" />
                   Dashboard
                 </Button>
@@ -52,16 +56,43 @@ export function ShopLayout() {
                   </Button>
                 </>
               )}
+              {/* Cart button */}
+              <button
+                onClick={toggleCart}
+                className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-border hover:bg-accent transition-colors"
+                aria-label="Open cart"
+              >
+                <ShoppingCart className="h-4 w-4" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+                    {cartCount > 99 ? "99+" : cartCount}
+                  </span>
+                )}
+              </button>
             </div>
 
-            {/* Mobile menu button */}
+            {/* Mobile cart + menu */}
+            <div className="flex md:hidden items-center gap-2">
+              <button
+                onClick={toggleCart}
+                className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-border hover:bg-accent transition-colors"
+                aria-label="Open cart"
+              >
+                <ShoppingCart className="h-4 w-4" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+                    {cartCount > 99 ? "99+" : cartCount}
+                  </span>
+                )}
+              </button>
             <button
-              className="md:hidden p-2 rounded-md text-muted-foreground hover:text-foreground"
+              className="p-2 rounded-md text-muted-foreground hover:text-foreground"
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label="Toggle menu"
             >
               {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
+            </div>
           </div>
         </div>
 
@@ -72,7 +103,7 @@ export function ShopLayout() {
               Shop
             </Link>
             {isAuthenticated ? (
-              <Button size="sm" className="w-full gap-2" onClick={() => { navigate("/"); setMobileOpen(false); }}>
+              <Button size="sm" variant="outline" className="w-full gap-2" onClick={() => { navigate("/dashboard"); setMobileOpen(false); }}>
                 <LayoutDashboard className="h-4 w-4" />
                 Dashboard
               </Button>
@@ -91,6 +122,9 @@ export function ShopLayout() {
           </div>
         )}
       </header>
+
+      {/* Cart Drawer */}
+      <CartDrawer />
 
       {/* Page Content */}
       <main className="flex-1">

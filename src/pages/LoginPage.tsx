@@ -2,13 +2,14 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { Zap, Eye, EyeOff, ArrowRight, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LoadingSpinner } from "@/components/shared/LoadingScreen";
 import { useAuth } from "@/contexts/AuthContext";
+import { authService } from "@/services/authService";
 
 const loginSchema = z.object({
   email: z.string().email("Enter a valid email address"),
@@ -22,7 +23,10 @@ export function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const from = (location.state as { from?: string })?.from ?? "/";
+  const [searchParams] = useSearchParams();
+
+  const returnTo = searchParams.get("returnTo");
+  const stateFrom = (location.state as { from?: string })?.from;
 
   const {
     register,
@@ -40,7 +44,21 @@ export function LoginPage() {
       return;
     }
     toast.success("Welcome back!", { description: "Signed in successfully." });
-    navigate(from, { replace: true });
+
+    if (returnTo) {
+      navigate(returnTo, { replace: true });
+      return;
+    }
+    if (stateFrom && stateFrom !== "/login") {
+      navigate(stateFrom, { replace: true });
+      return;
+    }
+    const freshProfile = await authService.getProfile(result.data!.user.id);
+    if (freshProfile?.role === "customer") {
+      navigate("/shop", { replace: true });
+    } else {
+      navigate("/dashboard", { replace: true });
+    }
   }
 
   return (
