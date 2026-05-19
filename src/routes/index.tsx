@@ -87,7 +87,7 @@ export const router = createBrowserRouter([
   {
     path: "/dashboard",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requiredRole={["admin", "staff"]} fallback="/">
         <DashboardLayout />
       </ProtectedRoute>
     ),
