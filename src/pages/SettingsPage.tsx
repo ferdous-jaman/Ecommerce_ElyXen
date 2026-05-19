@@ -35,6 +35,8 @@ const defaultNotifs: Record<NotifKey, boolean> = {
 export function SettingsPage() {
   const { user, profile } = useAuth();
   const displayName = profile?.full_name ?? user?.email?.split("@")[0] ?? "User";
+  const isAdmin = profile?.role === "admin";
+  const isStaff = profile?.role === "staff";
   const [showOldPw, setShowOldPw] = useState(false);
   const [showNewPw, setShowNewPw] = useState(false);
   const [notifs, setNotifs] = useState<Record<NotifKey, boolean>>(defaultNotifs);
@@ -66,11 +68,13 @@ export function SettingsPage() {
         description="Manage your account and application preferences."
       />
 
-      <Tabs defaultValue="staff" className="space-y-6">
+      <Tabs defaultValue={isStaff ? "staff" : "profile"} className="space-y-6">
         <TabsList className="h-9 w-full sm:w-auto gap-0.5 flex-wrap">
-          <TabsTrigger value="staff" className="gap-1.5 text-xs">
-            <Briefcase className="h-3.5 w-3.5" />Staff
-          </TabsTrigger>
+          {isStaff && (
+            <TabsTrigger value="staff" className="gap-1.5 text-xs">
+              <Briefcase className="h-3.5 w-3.5" />My Work
+            </TabsTrigger>
+          )}
           <TabsTrigger value="profile" className="gap-1.5 text-xs">
             <User className="h-3.5 w-3.5" />Profile
           </TabsTrigger>
@@ -83,10 +87,15 @@ export function SettingsPage() {
           <TabsTrigger value="security" className="gap-1.5 text-xs">
             <Shield className="h-3.5 w-3.5" />Security
           </TabsTrigger>
+          {isAdmin && (
+            <TabsTrigger value="store" className="gap-1.5 text-xs">
+              <Globe className="h-3.5 w-3.5" />Store
+            </TabsTrigger>
+          )}
         </TabsList>
 
-        {/* Staff Tab */}
-        <TabsContent value="staff" className="space-y-4 mt-0">
+        {/* Staff Tab — only rendered when role is staff */}
+        {isStaff && <TabsContent value="staff" className="space-y-4 mt-0">
 
           {/* Performance overview */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -281,7 +290,7 @@ export function SettingsPage() {
             </CardContent>
           </Card>
 
-        </TabsContent>
+        </TabsContent>}
 
         {/* Profile Tab */}
         <TabsContent value="profile" className="space-y-4 mt-0">
@@ -347,23 +356,73 @@ export function SettingsPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-destructive/30">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-base text-destructive">Danger Zone</CardTitle>
-              <CardDescription>Irreversible and destructive actions.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-center justify-between rounded-lg border border-destructive/20 bg-destructive/5 p-4">
-                <div>
-                  <p className="text-sm font-medium">Delete Account</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Permanently delete your account and all associated data. This cannot be undone.
-                  </p>
+          {/* Staff: Request a Change card */}
+          {isStaff && (
+            <Card className="border-primary/20 bg-primary/[0.02]">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <ClipboardList className="h-4 w-4 text-primary" /> Request a Change
+                </CardTitle>
+                <CardDescription>Need to update something you can't edit? Send a request to admin.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {[
+                    { label: "Update Email Address",    desc: "Request email change via admin" },
+                    { label: "Change Display Name",      desc: "Ask admin to update your name" },
+                    { label: "Update Phone Number",      desc: "Change your contact number" },
+                    { label: "Role/Permission Change",   desc: "Request access level update" },
+                  ].map(({ label, desc }) => (
+                    <button
+                      key={label}
+                      onClick={() => toast.success("Request sent!", { description: `Your "${label}" request has been submitted to the admin.` })}
+                      className="flex items-start gap-3 rounded-xl border border-border bg-background hover:bg-muted hover:border-primary/30 transition-all p-3 text-left group"
+                    >
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                        <ClipboardList className="h-4 w-4 text-primary" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-foreground">{label}</p>
+                        <p className="text-[11px] text-muted-foreground mt-0.5">{desc}</p>
+                      </div>
+                    </button>
+                  ))}
                 </div>
-                <Button variant="destructive" size="sm" className="shrink-0 ml-4">Delete</Button>
-              </div>
-            </CardContent>
-          </Card>
+                <Separator />
+                <div className="space-y-2">
+                  <Label className="text-xs">Custom Request</Label>
+                  <textarea
+                    className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    rows={3}
+                    placeholder="Describe what you'd like changed and why…"
+                  />
+                  <Button size="sm" className="gap-2" onClick={() => toast.success("Request submitted!", { description: "Admin will review your request shortly." })}>
+                    <ClipboardList className="h-3.5 w-3.5" /> Submit Request
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {isAdmin && (
+            <Card className="border-destructive/30">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-base text-destructive">Danger Zone</CardTitle>
+                <CardDescription>Irreversible and destructive actions.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex items-center justify-between rounded-lg border border-destructive/20 bg-destructive/5 p-4">
+                  <div>
+                    <p className="text-sm font-medium">Delete Account</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Permanently delete your account and all associated data. This cannot be undone.
+                    </p>
+                  </div>
+                  <Button variant="destructive" size="sm" className="shrink-0 ml-4">Delete</Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
 
         {/* Appearance Tab */}
@@ -416,7 +475,7 @@ export function SettingsPage() {
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs">Currency</Label>
-                  <Input defaultValue="USD ($)" className="h-9 text-sm" readOnly />
+                  <Input defaultValue="BDT (৳)" className="h-9 text-sm" readOnly />
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs">Date Format</Label>
@@ -563,6 +622,81 @@ export function SettingsPage() {
             </CardContent>
           </Card>
         </TabsContent>
+
+        {/* Store Settings Tab — admin only */}
+        {isAdmin && (
+          <TabsContent value="store" className="space-y-4 mt-0">
+            <Card>
+              <CardHeader className="pb-4">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Globe className="h-4 w-4 text-primary" /> Store Information
+                </CardTitle>
+                <CardDescription>Basic details about your store visible to customers.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs">Store Name</Label>
+                    <Input defaultValue="ElyXen Store" className="h-9 text-sm" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs">Support Email</Label>
+                    <Input defaultValue="support@elyxen.com" className="h-9 text-sm" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs">Phone</Label>
+                    <Input defaultValue="01700-000000" className="h-9 text-sm" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs">Address</Label>
+                    <Input defaultValue="Dhaka, Bangladesh" className="h-9 text-sm" />
+                  </div>
+                </div>
+                <div className="flex justify-end">
+                  <Button size="sm" onClick={handleSave} className="gap-1.5 min-w-[110px]">
+                    {saved ? <><Check className="h-3.5 w-3.5" />Saved!</> : "Save Changes"}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-4">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Shield className="h-4 w-4 text-primary" /> User Management
+                </CardTitle>
+                <CardDescription>Admin-only: view staff accounts and manage roles.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {[
+                  { name: "Karim Staff",   email: "karim@elyxen.com",  role: "staff",  status: "active" },
+                  { name: "Rina Manager",  email: "rina@elyxen.com",   role: "staff",  status: "active" },
+                  { name: "Demo Admin",    email: "admin@elyxen.com",  role: "admin",  status: "active" },
+                ].map((u) => (
+                  <div key={u.email} className="flex items-center justify-between rounded-lg border border-border bg-muted/20 px-4 py-3">
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-foreground">{u.name}</p>
+                      <p className="text-[11px] text-muted-foreground">{u.email}</p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <Badge variant="outline" className={cn("text-[10px]",
+                        u.role === "admin" ? "border-primary/30 text-primary bg-primary/5" : "")}>
+                        {u.role}
+                      </Badge>
+                      <Badge variant="outline" className="text-[10px] bg-emerald-50 text-emerald-700 border-emerald-200">
+                        {u.status}
+                      </Badge>
+                      <Button variant="ghost" size="sm" className="h-7 text-xs"
+                        onClick={() => toast.info("Role management coming soon")}>
+                        Edit
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );

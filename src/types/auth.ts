@@ -75,6 +75,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     "inventory:read",
     "inventory:write",
     "analytics:read",
+    "settings:read",
   ],
   customer: ["orders:read"],
 };
