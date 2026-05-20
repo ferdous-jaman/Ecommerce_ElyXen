@@ -37,7 +37,8 @@ export function ProtectedRoute({
       ? requiredRole
       : [requiredRole];
     if (!allowedRoles.includes(profile.role)) {
-      return <Navigate to="/unauthorized" replace />;
+      const roleFallback = profile.role === "customer" ? "/" : "/unauthorized";
+      return <Navigate to={roleFallback} replace />;
     }
   }
 
